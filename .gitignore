@@ -1,0 +1,47 @@
+# Fichiers système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Éditeurs / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.log
+
+# Fichiers temporaires
+*.tmp
+*.temp
+*.bak
+*.old
+
+# Dépendances (si vous utilisez Node.js plus tard)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Fichiers de build / distribution
+dist/
+build/
+*.min.js
+*.min.css
+
+# Fichiers de configuration personnels
+.env
+.env.local
+.env.*.local
+
+# Fichiers de logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Fichiers compressés
+*.zip
+*.rar
+*.7z
+*.tar.gzgit 
