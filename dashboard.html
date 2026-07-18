@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Découvrir - Cœurs Connectés</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #faf6f2;
+            color: #2d1e1a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 40px;
+            flex: 1;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes swipeLeft {
+            0% { transform: rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: rotate(-15deg) translateX(-200px) scale(0.8); opacity: 0; }
+        }
+
+        @keyframes swipeRight {
+            0% { transform: rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: rotate(15deg) translateX(200px) scale(0.8); opacity: 0; }
+        }
+
+        @keyframes cardAppear {
+            0% { transform: scale(0.9) translateY(30px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .animate {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(44, 30, 26, 0.06);
+            background: rgba(250, 246, 242, 0.85);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #c0392b;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span {
+            font-size: 26px;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #5a4a44;
+            font-size: 14px;
+            font-weight: 450;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: #c0392b;
+        }
+
+        nav a.active {
+            font-weight: 600;
+        }
+
+        nav a .badge {
+            background: #c0392b;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 50px;
+            margin-left: 4px;
+        }
+
+        .nav-profile {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .nav-profile:hover {
+            transform: scale(1.05);
+            border-color: #c0392b;
+        }
+
+        /* ===== SECTION HERO DU DASHBOARD ===== */
+        .dashboard-hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 28px 0 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .dashboard-hero .greeting {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e130f;
+        }
+
+        .dashboard-hero .greeting i {
+            color: #c0392b;
+        }
+
+        .dashboard-hero .greeting span {
+            color: #c0392b;
+        }
+
+        .dashboard-hero .sub-greeting {
+            color: #7a6a64;
+            font-size: 15px;
+            margin-top: 2px;
+        }
+
+        .dashboard-hero .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-outline-sm {
+            padding: 10px 24px;
+            border: 1.5px solid #e8e0da;
+            border-radius: 50px;
+            background: transparent;
+            color: #5a4a44;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-outline-sm:hover {
+            border-color: #c0392b;
+            color: #c0392b;
+        }
+
+        .btn-primary-sm {
+            padding: 10px 28px;
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 16px rgba(192, 57, 43, 0.2);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary-sm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(192, 57, 43, 0.3);
+        }
+
+        /* ===== SECTION FILTRES ===== */
+        .filter-section {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(44, 30, 26, 0.04);
+            margin-bottom: 28px;
+        }
+
+        .filter-chip {
+            padding: 8px 20px;
+            border: 1.5px solid #e8e0da;
+            border-radius: 50px;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 450;
+            color: #5a4a44;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-chip:hover {
+            border-color: #c0392b;
+            color: #c0392b;
+        }
+
+        .filter-chip.active {
+            background: #c0392b;
+            border-color: #c0392b;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(192, 57, 43, 0.15);
+        }
+
+        .filter-chip i {
+            font-size: 13px;
+        }
+
+        /* ===== SWIPE CARDS ===== */
+        .swipe-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0 40px;
+            position: relative;
+            min-height: 520px;
+        }
+
+        .swipe-card-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+            height: 520px;
+            margin: 0 auto;
+        }
+
+        .swipe-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(44, 30, 26, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            border: 1px solid rgba(44, 30, 26, 0.03);
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+        }
+
+        .swipe-card:active {
+            cursor: grabbing;
+        }
+
+        .swipe-card .card-image {
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(135deg, #f0e8e0, #e6dcd4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+            color: #b0a49e;
+            position: relative;
+        }
+
+        .swipe-card .card-image .online-badge {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background: #27ae60;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .swipe-card .card-image .online-badge.offline {
+            background: #b0a49e;
+            box-shadow: none;
+        }
+
+        .swipe-card .card-body {
+            padding: 20px 24px 16px;
+            height: 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .swipe-card .card-body .name-age {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .swipe-card .card-body .name-age h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e130f;
+        }
+
+        .swipe-card .card-body .name-age .age {
+            font-size: 18px;
+            color: #7a6a64;
+            font-weight: 400;
+        }
+
+        .swipe-card .card-body .location {
+            font-size: 14px;
+            color: #9a8a84;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .swipe-card .card-body .bio {
+            font-size: 14px;
+            color: #5a4a44;
+            line-height: 1.5;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .swipe-card .card-body .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .swipe-card .card-body .tags span {
+            padding: 4px 14px;
+            background: #f5ede7;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 450;
+            color: #5a4a44;
+        }
+
+        /* Badge "aimé" qui apparaît sur swipe */
+        .swipe-badge {
+            position: absolute;
+            top: 40px;
+            font-size: 48px;
+            font-weight: 800;
+            padding: 8px 24px;
+            border-radius: 16px;
+            transform: rotate(-20deg);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 10;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .swipe-badge.like {
+            right: 20px;
+            color: #27ae60;
+            border: 4px solid #27ae60;
+            background: rgba(39, 174, 96, 0.06);
+        }
+
+        .swipe-badge.nope {
+            left: 20px;
+            color: #e74c3c;
+            border: 4px solid #e74c3c;
+            background: rgba(231, 76, 60, 0.06);
+        }
+
+        .swipe-badge.show {
+            opacity: 1;
+        }
+
+        /* ===== BOUTONS D'ACTION SWIPE ===== */
+        .swipe-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 16px 0 8px;
+        }
+
+        .swipe-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 2px solid #e8e0da;
+            background: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(44, 30, 26, 0.04);
+        }
+
+        .swipe-btn:hover {
+            transform: scale(1.06);
+        }
+
+        .swipe-btn:active {
+            transform: scale(0.95);
+        }
+
+        .swipe-btn.nope:hover {
+            border-color: #e74c3c;
+            background: #fef3f2;
+            color: #e74c3c;
+            box-shadow: 0 4px 20px rgba(231, 76, 60, 0.15);
+        }
+
+        .swipe-btn.like:hover {
+            border-color: #27ae60;
+            background: #ecfdf5;
+            color: #27ae60;
+            box-shadow: 0 4px 20px rgba(39, 174, 96, 0.15);
+        }
+
+        .swipe-btn.super-like:hover {
+            border-color: #3498db;
+            background: #eff6ff;
+            color: #3498db;
+            box-shadow: 0 4px 20px rgba(52, 152, 219, 0.15);
+        }
+
+        /* ===== FIN DE LA FILE ===== */
+        .no-more-cards {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .no-more-cards .icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        .no-more-cards h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #1e130f;
+            margin-bottom: 8px;
+        }
+
+        .no-more-cards p {
+            color: #7a6a64;
+            font-size: 16px;
+            max-width: 400px;
+            margin: 0 auto 24px;
+        }
+
+        .no-more-cards .btn-refresh {
+            padding: 12px 36px;
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 24px rgba(192, 57, 43, 0.2);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .no-more-cards .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(192, 57, 43, 0.3);
+        }
+
+        /* ===== MATCH POPUP ===== */
+        .match-popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .match-popup-overlay.show {
+            display: flex;
+        }
+
+        .match-popup {
+            background: #ffffff;
+            border-radius: 40px;
+            padding: 48px 40px 40px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            animation: fadeInScale 0.5s ease;
+            position: relative;
+        }
+
+        .match-popup .close-popup {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #b0a49e;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .match-popup .close-popup:hover {
+            color: #2d1e1a;
+        }
+
+        .match-popup .popup-icon {
+            font-size: 72px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .match-popup h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #1e130f;
+            margin: 8px 0 4px;
+        }
+
+        .match-popup p {
+            color: #7a6a64;
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+
+        .match-popup .popup-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .match-popup .popup-actions .btn-continue {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .match-popup .popup-actions .btn-continue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(192, 57, 43, 0.3);
+        }
+
+        .match-popup .popup-actions .btn-message {
+            padding: 12px 32px;
+            background: #1e130f;
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .match-popup .popup-actions .btn-message:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 24px 0;
+            border-top: 1px solid rgba(44, 30, 26, 0.05);
+            text-align: center;
+            font-size: 13px;
+            color: #7a6a64;
+        }
+
+        footer a {
+            color: #7a6a64;
+            text-decoration: none;
+            margin: 0 12px;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #c0392b;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container { padding: 0 20px; }
+
+            .dashboard-hero .greeting {
+                font-size: 24px;
+            }
+
+            .dashboard-hero .action-buttons .btn-outline-sm span,
+            .dashboard-hero .action-buttons .btn-primary-sm span {
+                display: none;
+            }
+
+            .filter-section {
+                gap: 8px;
+            }
+
+            .filter-chip {
+                padding: 6px 14px;
+                font-size: 12px;
+            }
+
+            .swipe-card-wrapper {
+                height: 440px;
+            }
+
+            .swipe-card .card-image {
+                height: 55%;
+                font-size: 56px;
+            }
+
+            .swipe-card .card-body .name-age h3 {
+                font-size: 18px;
+            }
+
+            .swipe-card .card-body .name-age .age {
+                font-size: 16px;
+            }
+
+            .swipe-btn {
+                width: 54px;
+                height: 54px;
+                font-size: 20px;
+            }
+
+            .swipe-actions {
+                gap: 14px;
+            }
+
+            nav a span {
+                display: none;
+            }
+
+            nav a .badge {
+                display: none;
+            }
+
+            .match-popup {
+                padding: 32px 24px 28px;
+            }
+
+            .match-popup h2 {
+                font-size: 26px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .swipe-card-wrapper {
+                height: 380px;
+            }
+
+            .swipe-card .card-image {
+                font-size: 44px;
+            }
+
+            .swipe-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 18px;
+            }
+
+            .swipe-actions {
+                gap: 10px;
+            }
+
+            .dashboard-hero .greeting {
+                font-size: 20px;
+            }
+
+            .match-popup .popup-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <header>
+            <a href="index.html" class="logo">
+                <span>❤️</span> Cœurs Connectés
+            </a>
+            <nav>
+                <a href="dashboard.html" class="active"><i class="fas fa-compass"></i> <span>Découvrir</span></a>
+                <a href="matchs.html"><i class="fas fa-heart"></i> <span>Matchs</span> <span class="badge">12</span></a>
+                <a href="messages.html"><i class="fas fa-comment-dots"></i> <span>Messages</span> <span class="badge">4</span></a>
+                <a href="profil.html"><i class="fas fa-user"></i> <span>Profil</span></a>
+                <div class="nav-profile" onclick="window.location.href='profil.html'" title="Mon profil">JD</div>
+            </nav>
+        </header>
+
+        <!-- ===== HERO ===== -->
+        <div class="dashboard-hero">
+            <div>
+                <div class="greeting">
+                    Bonjour, <span>Julien</span> <i class="fas fa-heart" style="font-size: 24px;"></i>
+                </div>
+                <div class="sub-greeting">💕 12 personnes ont aimé votre profil cette semaine</div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-outline-sm"><i class="fas fa-sliders-h"></i> <span>Filtres</span></button>
+                <button class="btn-primary-sm"><i class="fas fa-rocket"></i> <span>Boost</span></button>
+            </div>
+        </div>
+
+        <!-- ===== FILTRES ===== -->
+        <div class="filter-section">
+            <button class="filter-chip active"><i class="fas fa-utensils"></i> Tous</button>
+            <button class="filter-chip"><i class="fas fa-female"></i> Femmes</button>
+            <button class="filter-chip"><i class="fas fa-male"></i> Hommes</button>
+            <button class="filter-chip"><i class="fas fa-user-circle"></i> Non-binaires</button>
+            <button class="filter-chip"><i class="fas fa-map-pin"></i> < 10 km</button>
+            <button class="filter-chip"><i class="fas fa-magic"></i> Nouveautés</button>
+        </div>
+
+        <!-- ===== SWIPE CARDS ===== -->
+        <div class="swipe-container" id="swipeContainer">
+
+            <div class="swipe-card-wrapper" id="swipeWrapper">
+
+                <!-- ===== CARTE 1 ===== -->
+                <div class="swipe-card" data-id="1" style="z-index: 5;">
+                    <div class="swipe-badge like">❤️</div>
+                    <div class="swipe-badge nope">✕</div>
+                    <div class="card-image" style="background: linear-gradient(135deg, #f5ede7, #e8dbd2);">
+                        👩
+                        <span class="online-badge">● En ligne</span>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <div class="name-age">
+                                <h3>Sophie</h3>
+                                <span class="age">28 ans</span>
+                            </div>
+                            <div class="location"><i class="fas fa-map-pin"></i> Paris, 5 km</div>
+                            <div class="bio">Artiste peintre, amoureuse des voyages et des bons restaurants.</div>
+                            <div class="tags">
+                                <span>🎨 Art</span>
+                                <span>✈️ Voyage</span>
+                                <span>🍳 Cuisine</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== CARTE 2 ===== -->
+                <div class="swipe-card" data-id="2" style="z-index: 4; transform: scale(0.96) translateY(12px); opacity: 0.7;">
+                    <div class="swipe-badge like">❤️</div>
+                    <div class="swipe-badge nope">✕</div>
+                    <div class="card-image" style="background: linear-gradient(135deg, #e8f0ee, #d5e0dc);">
+                        👨
+                        <span class="online-badge offline">● Hors ligne</span>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <div class="name-age">
+                                <h3>Lucas</h3>
+                                <span class="age">31 ans</span>
+                            </div>
+                            <div class="location"><i class="fas fa-map-pin"></i> Boulogne, 12 km</div>
+                            <div class="bio">Sportif, musicien amateur et passionné de cuisine italienne.</div>
+                            <div class="tags">
+                                <span>🏃 Sport</span>
+                                <span>🎵 Musique</span>
+                                <span>🍳 Cuisine</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== CARTE 3 ===== -->
+                <div class="swipe-card" data-id="3" style="z-index: 3; transform: scale(0.92) translateY(24px); opacity: 0.5;">
+                    <div class="swipe-badge like">❤️</div>
+                    <div class="swipe-badge nope">✕</div>
+                    <div class="card-image" style="background: linear-gradient(135deg, #f0e8f0, #e0d6e0);">
+                        👩
+                        <span class="online-badge">● En ligne</span>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <div class="name-age">
+                                <h3>Camille</h3>
+                                <span class="age">26 ans</span>
+                            </div>
+                            <div class="location"><i class="fas fa-map-pin"></i> Vincennes, 8 km</div>
+                            <div class="bio">Photographe, amoureuse de la nature et des animaux.</div>
+                            <div class="tags">
+                                <span>📷 Photo</span>
+                                <span>🌿 Nature</span>
+                                <span>🐾 Animaux</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== CARTE 4 ===== -->
+                <div class="swipe-card" data-id="4" style="z-index: 2; transform: scale(0.88) translateY(36px); opacity: 0.3;">
+                    <div class="swipe-badge like">❤️</div>
+                    <div class="swipe-badge nope">✕</div>
+                    <div class="card-image" style="background: linear-gradient(135deg, #f5ede7, #e8dbd2);">
+                        👨
+                        <span class="online-badge">● En ligne</span>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <div class="name-age">
+                                <h3>Thomas</h3>
+                                <span class="age">29 ans</span>
+                            </div>
+                            <div class="location"><i class="fas fa-map-pin"></i> Paris, 3 km</div>
+                            <div class="bio">Guitariste, lecteur passionné et amoureux des chats.</div>
+                            <div class="tags">
+                                <span>🎸 Guitare</span>
+                                <span>📖 Lecture</span>
+                                <span>🐾 Animaux</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== CARTE 5 ===== -->
+                <div class="swipe-card" data-id="5" style="z-index: 1; transform: scale(0.84) translateY(48px); opacity: 0.15;">
+                    <div class="swipe-badge like">❤️</div>
+                    <div class="swipe-badge nope">✕</div>
+                    <div class="card-image" style="background: linear-gradient(135deg, #e8f0ee, #d5e0dc);">
+                        👩
+                        <span class="online-badge offline">● Hors ligne</span>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <div class="name-age">
+                                <h3>Emma</h3>
+                                <span class="age">27 ans</span>
+                            </div>
+                            <div class="location"><i class="fas fa-map-pin"></i> Montreuil, 15 km</div>
+                            <div class="bio">Danseuse, passionnée d'art et de voyages.</div>
+                            <div class="tags">
+                                <span>💃 Danse</span>
+                                <span>🎨 Art</span>
+                                <span>✈️ Voyage</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ===== BOUTONS D'ACTION ===== -->
+        <div class="swipe-actions">
+            <button class="swipe-btn nope" onclick="swipeCard('nope')" title="Passer">
+                <i class="fas fa-times"></i>
+            </button>
+            <button class="swipe-btn super-like" onclick="swipeCard('super')" title="Super like">
+                <i class="fas fa-star"></i>
+            </button>
+            <button class="swipe-btn like" onclick="swipeCard('like')" title="Aimer">
+                <i class="fas fa-heart"></i>
+            </button>
+        </div>
+
+        <!-- ===== FIN DE FILE ===== -->
+        <div id="emptyState" style="display: none;">
+            <div class="no-more-cards">
+                <div class="icon">🌟</div>
+                <h3>Vous avez tout vu !</h3>
+                <p>Vous avez exploré tous les profils correspondant à vos critères.</p>
+                <button class="btn-refresh" onclick="resetCards()">
+                    <i class="fas fa-sync-alt"></i> Recommencer
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <footer>
+            <span>© 2026 Cœurs Connectés — avec ❤️</span>
+            <span>
+                <a href="#">Mentions légales</a>
+                <a href="#">Confidentialité</a>
+                <a href="#">Contact</a>
+            </span>
+        </footer>
+
+    </div>
+
+    <!-- ===== MATCH POPUP ===== -->
+    <div class="match-popup-overlay" id="matchPopup">
+        <div class="match-popup">
+            <button class="close-popup" onclick="closeMatchPopup()">✕</button>
+            <div class="popup-icon">💕</div>
+            <h2>C'est un match !</h2>
+            <p id="matchName">Vous avez matché avec Sophie !</p>
+            <p style="font-size: 14px; color: #b0a49e; margin-top: -16px; margin-bottom: 20px;">Vous pouvez maintenant discuter ensemble 💬</p>
+            <div class="popup-actions">
+                <button class="btn-continue" onclick="closeMatchPopup()">Continuer à swiper</button>
+                <button class="btn-message" onclick="goToMessages()"><i class="fas fa-comment"></i> Envoyer un message</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // ===== VARIABLES =====
+        let currentCard = 0;
+        const cards = document.querySelectorAll('.swipe-card');
+        const totalCards = cards.length;
+        let isAnimating = false;
+
+        // ===== FILTRES =====
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // ===== SWIPE CARD =====
+        function swipeCard(action) {
+            if (isAnimating || currentCard >= totalCards) return;
+            isAnimating = true;
+
+            const card = cards[currentCard];
+            const wrapper = document.getElementById('swipeWrapper');
+
+            // Afficher le badge correspondant
+            const badgeLike = card.querySelector('.swipe-badge.like');
+            const badgeNope = card.querySelector('.swipe-badge.nope');
+
+            if (action === 'like' || action === 'super') {
+                badgeLike.classList.add('show');
+                card.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
+                card.style.transform = 'rotate(12deg) translateX(200px) scale(0.9)';
+                card.style.opacity = '0';
+
+                // Vérifier si c'est un match (simulation)
+                if (Math.random() > 0.6) {
+                    const name = card.querySelector('.name-age h3').textContent;
+                    setTimeout(() => {
+                        showMatchPopup(name);
+                    }, 600);
+                }
+
+            } else {
+                badgeNope.classList.add('show');
+                card.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
+                card.style.transform = 'rotate(-12deg) translateX(-200px) scale(0.9)';
+                card.style.opacity = '0';
+            }
+
+            currentCard++;
+
+            setTimeout(() => {
+                // Réinitialiser la carte
+                card.style.transition = 'none';
+                card.style.transform = '';
+                card.style.opacity = '1';
+                badgeLike.classList.remove('show');
+                badgeNope.classList.remove('show');
+
+                // Si on a fini les cartes
+                if (currentCard >= totalCards) {
+                    document.getElementById('swipeWrapper').style.display = 'none';
+                    document.getElementById('emptyState').style.display = 'block';
+                }
+
+                isAnimating = false;
+            }, 600);
+        }
+
+        // ===== DRAG & SWIPE (souris) =====
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let currentX = 0;
+        let currentY = 0;
+        let dragCard = null;
+
+        document.querySelectorAll('.swipe-card').forEach(card => {
+            card.addEventListener('mousedown', function(e) {
+                if (isAnimating || this !== cards[currentCard]) return;
+                isDragging = true;
+                dragCard = this;
+                startX = e.clientX;
+                startY = e.clientY;
+                currentX = 0;
+                currentY = 0;
+                this.style.cursor = 'grabbing';
+                this.style.transition = 'none';
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging || !dragCard) return;
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                currentX = deltaX;
+                currentY = deltaY;
+
+                const rotate = deltaX * 0.05;
+                const opacity = 1 - Math.min(Math.abs(deltaX) / 300, 0.5);
+
+                dragCard.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotate}deg)`;
+                dragCard.style.opacity = opacity;
+
+                // Afficher les badges
+                const badgeLike = dragCard.querySelector('.swipe-badge.like');
+                const badgeNope = dragCard.querySelector('.swipe-badge.nope');
+                if (deltaX > 30) {
+                    badgeLike.classList.add('show');
+                    badgeNope.classList.remove('show');
+                } else if (deltaX < -30) {
+                    badgeNope.classList.add('show');
+                    badgeLike.classList.remove('show');
+                } else {
+                    badgeLike.classList.remove('show');
+                    badgeNope.classList.remove('show');
+                }
+            });
+
+            document.addEventListener('mouseup', function(e) {
+                if (!isDragging || !dragCard) return;
+                isDragging = false;
+
+                const deltaX = currentX;
+                const threshold = 80;
+
+                if (Math.abs(deltaX) > threshold) {
+                    // Swipe validé
+                    const action = deltaX > 0 ? 'like' : 'nope';
+                    const badgeLike = dragCard.querySelector('.swipe-badge.like');
+                    const badgeNope = dragCard.querySelector('.swipe-badge.nope');
+
+                    if (action === 'like') {
+                        badgeLike.classList.add('show');
+                        dragCard.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
+                        dragCard.style.transform = `translate(300px, ${currentY * 0.3}px) rotate(15deg)`;
+                        dragCard.style.opacity = '0';
+
+                        if (Math.random() > 0.6) {
+                            const name = dragCard.querySelector('.name-age h3').textContent;
+                            setTimeout(() => {
+                                showMatchPopup(name);
+                            }, 600);
+                        }
+                    } else {
+                        badgeNope.classList.add('show');
+                        dragCard.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
+                        dragCard.style.transform = `translate(-300px, ${currentY * 0.3}px) rotate(-15deg)`;
+                        dragCard.style.opacity = '0';
+                    }
+
+                    currentCard++;
+                    setTimeout(() => {
+                        dragCard.style.transition = 'none';
+                        dragCard.style.transform = '';
+                        dragCard.style.opacity = '1';
+                        dragCard.querySelector('.swipe-badge.like').classList.remove('show');
+                        dragCard.querySelector('.swipe-badge.nope').classList.remove('show');
+                        dragCard.style.cursor = 'grab';
+
+                        if (currentCard >= totalCards) {
+                            document.getElementById('swipeWrapper').style.display = 'none';
+                            document.getElementById('emptyState').style.display = 'block';
+                        }
+                        isAnimating = false;
+                    }, 600);
+
+                } else {
+                    // Annuler
+                    dragCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease';
+                    dragCard.style.transform = '';
+                    dragCard.style.opacity = '1';
+                    dragCard.style.cursor = 'grab';
+                    dragCard.querySelector('.swipe-badge.like').classList.remove('show');
+                    dragCard.querySelector('.swipe-badge.nope').classList.remove('show');
+                }
+
+                dragCard = null;
+                isAnimating = false;
+            });
+        });
+
+        // ===== TOUCH SUPPORT =====
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.querySelectorAll('.swipe-card').forEach(card => {
+            card.addEventListener('touchstart', function(e) {
+                if (isAnimating || this !== cards[currentCard]) return;
+                const touch = e.touches[0];
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                isDragging = true;
+                dragCard = this;
+                this.style.transition = 'none';
+            });
+
+            card.addEventListener('touchmove', function(e) {
+                if (!isDragging || !dragCard) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - touchStartX;
+                const deltaY = touch.clientY - touchStartY;
+                currentX = deltaX;
+                currentY = deltaY;
+
+                const rotate = deltaX * 0.05;
+                const opacity = 1 - Math.min(Math.abs(deltaX) / 300, 0.5);
+
+                dragCard.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotate}deg)`;
+                dragCard.style.opacity = opacity;
+
+                const badgeLike = dragCard.querySelector('.swipe-badge.like');
+                const badgeNope = dragCard.querySelector('.swipe-badge.nope');
+                if (deltaX > 30) {
+                    badgeLike.classList.add('show');
+                    badgeNope.classList.remove('show');
+                } else if (deltaX < -30) {
+                    badgeNope.classList.add('show');
+                    badgeLike.classList.remove('show');
+                } else {
+                    badgeLike.classList.remove('show');
+                    badgeNope.classList.remove('show');
+                }
+            });
+
+            card.addEventListener('touchend', function(e) {
+                if (!isDragging || !dragCard) return;
+                isDragging = false;
+
+                const deltaX = currentX;
+                const threshold = 80;
+
+                if (Math.abs(deltaX) > threshold) {
+                    const action = deltaX > 0 ? 'like' : 'nope';
+                    const badgeLike = dragCard.querySelector('.swipe-badge.like');
+                    const badgeNope = dragCard.querySelector('.swipe-badge.nope');
+
+                    if (action === 'like') {
+                        badgeLike.classList.add('show');
+                        dragCard.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
+                        dragCard.style.transform = `translate(300px, ${currentY * 0.3}px) rotate(15deg)`;
+                        dragCard.style.opacity = '0';
+
+                        if (Math.random() > 0.6) {
+                            const name = dragCard.querySelector('.name-age h3').textContent;
+                            setTimeout(() => {
+                                showMatchPopup(name);
+                            }, 600);
+                        }
+                    } else {
+                        badgeNope.classList.add('show');
+                        dragCard.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
+                        dragCard.style.transform = `translate(-300px, ${currentY * 0.3}px) rotate(-15deg)`;
+                        dragCard.style.opacity = '0';
+                    }
+
+                    currentCard++;
+                    setTimeout(() => {
+                        dragCard.style.transition = 'none';
+                        dragCard.style.transform = '';
+                        dragCard.style.opacity = '1';
+                        dragCard.querySelector('.swipe-badge.like').classList.remove('show');
+                        dragCard.querySelector('.swipe-badge.nope').classList.remove('show');
+
+                        if (currentCard >= totalCards) {
+                            document.getElementById('swipeWrapper').style.display = 'none';
+                            document.getElementById('emptyState').style.display = 'block';
+                        }
+                        isAnimating = false;
+                    }, 600);
+
+                } else {
+                    dragCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease';
+                    dragCard.style.transform = '';
+                    dragCard.style.opacity = '1';
+                    dragCard.querySelector('.swipe-badge.like').classList.remove('show');
+                    dragCard.querySelector('.swipe-badge.nope').classList.remove('show');
+                }
+
+                dragCard = null;
+                isAnimating = false;
+            });
+        });
+
+        // ===== MATCH POPUP =====
+        function showMatchPopup(name) {
+            document.getElementById('matchName').textContent = `Vous avez matché avec ${name} !`;
+            document.getElementById('matchPopup').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMatchPopup() {
+            document.getElementById('matchPopup').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function goToMessages() {
+            closeMatchPopup();
+            window.location.href = 'messages.html';
+        }
+
+        // ===== RESET CARDS =====
+        function resetCards() {
+            currentCard = 0;
+            document.getElementById('swipeWrapper').style.display = 'block';
+            document.getElementById('emptyState').style.display = 'none';
+
+            cards.forEach(card => {
+                card.style.transition = 'none';
+                card.style.transform = '';
+                card.style.opacity = '1';
+                card.querySelector('.swipe-badge.like').classList.remove('show');
+                card.querySelector('.swipe-badge.nope').classList.remove('show');
+            });
+
+            // Réinitialiser les positions z-index
+            cards.forEach((card, index) => {
+                const zIndex = totalCards - index;
+                const scale = 1 - (index * 0.04);
+                const translateY = index * 12;
+                const opacity = 1 - (index * 0.12);
+                card.style.zIndex = zIndex;
+                card.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+                card.style.opacity = Math.max(opacity, 0.15);
+            });
+
+            isAnimating = false;
+        }
+
+        // ===== INITIALISATION =====
+        // Positionner les cartes correctement au chargement
+        cards.forEach((card, index) => {
+            if (index > 0) {
+                const scale = 1 - (index * 0.04);
+                const translateY = index * 12;
+                const opacity = 1 - (index * 0.12);
+                card.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+                card.style.opacity = Math.max(opacity, 0.15);
+                card.style.zIndex = totalCards - index;
+            }
+        });
+
+        // ===== TOUCHE ÉCHAP POUR POPUP =====
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMatchPopup();
+            }
+        });
+
+        // ===== CLAIR SUR LE OVERLAY POUR FERMER =====
+        document.getElementById('matchPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMatchPopup();
+            }
+        });
+    </script>
+
+</body>
+</html>
