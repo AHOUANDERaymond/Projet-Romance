@@ -66,11 +66,6 @@
             50% { opacity: 1; transform: translateY(-4px); }
         }
 
-        @keyframes shimmer {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-
         .animate {
             animation: fadeInUp 0.6s ease forwards;
         }
@@ -159,6 +154,25 @@
         .nav-profile:hover {
             transform: scale(1.05);
             border-color: #c0392b;
+        }
+
+        /* ===== BOUTON DÉCONNEXION ===== */
+        .btn-logout {
+            padding: 8px 20px;
+            border: 1.5px solid #e74c3c;
+            border-radius: 50px;
+            background: transparent;
+            color: #e74c3c;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-logout:hover {
+            background: #e74c3c;
+            color: #fff;
         }
 
         /* ===== PAGE HEADER ===== */
@@ -345,32 +359,6 @@
             padding: 2px 8px;
             border-radius: 50px;
             flex-shrink: 0;
-        }
-
-        .conv-item .conv-info .conv-preview .typing-indicator {
-            display: none;
-            gap: 4px;
-            align-items: center;
-        }
-
-        .conv-item .conv-info .conv-preview .typing-indicator span {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #c0392b;
-            animation: typing 1.2s ease-in-out infinite;
-        }
-
-        .conv-item .conv-info .conv-preview .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .conv-item .conv-info .conv-preview .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        .conv-item .conv-info .conv-preview .typing-indicator.show {
-            display: flex;
         }
 
         /* ===== CHAT ===== */
@@ -668,6 +656,50 @@
             color: #c0392b;
         }
 
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e130f;
+            color: #fff;
+            padding: 16px 28px;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 200;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            color: #2ecc71;
+            font-size: 20px;
+        }
+
+        .toast .toast-close {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            font-size: 18px;
+            margin-left: 8px;
+            transition: color 0.3s;
+        }
+
+        .toast .toast-close:hover {
+            color: #fff;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
             .messaging {
@@ -788,15 +820,15 @@
 
         <!-- ===== HEADER ===== -->
         <header>
-            <a href="index.html" class="logo">
+            <a href="INDEX.HTML" class="logo">
                 <span>❤️</span> Cœurs Connectés
             </a>
             <nav>
                 <a href="dashboard.html"><i class="fas fa-compass"></i> <span>Découvrir</span></a>
-                <a href="matchs.html"><i class="fas fa-heart"></i> <span>Matchs</span> <span class="badge">12</span></a>
-                <a href="messages.html" class="active"><i class="fas fa-comment-dots"></i> <span>Messages</span> <span class="badge">4</span></a>
+                <a href="matchs.html"><i class="fas fa-heart"></i> <span>Matchs</span> <span class="badge" id="matchBadge">0</span></a>
+                <a href="messages.html" class="active"><i class="fas fa-comment-dots"></i> <span>Messages</span> <span class="badge" id="messageBadge">0</span></a>
                 <a href="profil.html"><i class="fas fa-user"></i> <span>Profil</span></a>
-                <div class="nav-profile" onclick="window.location.href='profil.html'" title="Mon profil">JD</div>
+                <div class="nav-profile" onclick="window.location.href='profil.html'" title="Mon profil" id="profileInitial">JD</div>
             </nav>
         </header>
 
@@ -804,8 +836,11 @@
         <div class="page-header">
             <div>
                 <h1><i class="fas fa-comment-dots"></i> Messages</h1>
-                <div class="subtitle">💬 4 conversations en cours</div>
+                <div class="subtitle" id="subtitle">💬 Chargement des conversations...</div>
             </div>
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </button>
         </div>
 
         <!-- ===== MESSAGERIE ===== -->
@@ -817,97 +852,7 @@
                     <input type="text" placeholder="🔍 Rechercher une conversation..." id="searchConv" oninput="filterConversations()" />
                 </div>
                 <div class="conversation-items" id="convList">
-
-                    <!-- Conversation 1 -->
-                    <div class="conv-item active" data-name="Sophie" onclick="openChat('Sophie', '👩', true)">
-                        <div class="conv-avatar">
-                            👩
-                            <span class="online-dot"></span>
-                        </div>
-                        <div class="conv-info">
-                            <div class="conv-name">
-                                Sophie
-                                <span class="conv-time">12:34</span>
-                            </div>
-                            <div class="conv-preview">
-                                <span>Coucou ! Tu fais quoi ce week-end ?</span>
-                                <span class="unread">3</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Conversation 2 -->
-                    <div class="conv-item" data-name="Lucas" onclick="openChat('Lucas', '👨', false)">
-                        <div class="conv-avatar">
-                            👨
-                            <span class="online-dot"></span>
-                        </div>
-                        <div class="conv-info">
-                            <div class="conv-name">
-                                Lucas
-                                <span class="conv-time">Hier</span>
-                            </div>
-                            <div class="conv-preview">
-                                <span>On se fait un restau ce soir ?</span>
-                                <span class="unread">1</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Conversation 3 -->
-                    <div class="conv-item" data-name="Camille" onclick="openChat('Camille', '👩', false)">
-                        <div class="conv-avatar">
-                            👩
-                            <span class="online-dot offline"></span>
-                        </div>
-                        <div class="conv-info">
-                            <div class="conv-name">
-                                Camille
-                                <span class="conv-time">Hier</span>
-                            </div>
-                            <div class="conv-preview">
-                                <span>J'adore ta photo de voyage ! 🌍</span>
-                                <span></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Conversation 4 -->
-                    <div class="conv-item" data-name="Thomas" onclick="openChat('Thomas', '👨', false)">
-                        <div class="conv-avatar">
-                            👨
-                            <span class="online-dot"></span>
-                        </div>
-                        <div class="conv-info">
-                            <div class="conv-name">
-                                Thomas
-                                <span class="conv-time">Mercredi</span>
-                            </div>
-                            <div class="conv-preview">
-                                <span>Super ! À tout à l'heure alors 😊</span>
-                                <span></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Conversation 5 -->
-                    <div class="conv-item" data-name="Emma" onclick="openChat('Emma', '👩', false)">
-                        <div class="conv-avatar">
-                            👩
-                            <span class="online-dot offline"></span>
-                        </div>
-                        <div class="conv-info">
-                            <div class="conv-name">
-                                Emma
-                                <span class="conv-time">Mardi</span>
-                            </div>
-                            <div class="conv-preview">
-                                <span>Tu viens au concert samedi ?</span>
-                                <span></span>
-                            </div>
-                        </div>
-                    </div>
-
+                    <!-- Les conversations seront chargées dynamiquement -->
                 </div>
             </div>
 
@@ -916,13 +861,13 @@
 
                 <!-- ===== CHAT HEADER ===== -->
                 <div class="chat-header">
-                    <div class="chat-avatar">
-                        👩
+                    <div class="chat-avatar" id="chatAvatar">
+                        👤
                         <span class="online-dot"></span>
                     </div>
                     <div class="chat-contact">
-                        <div class="chat-name" id="chatContactName">Sophie</div>
-                        <div class="chat-status" id="chatContactStatus">● En ligne</div>
+                        <div class="chat-name" id="chatContactName">Sélectionnez une conversation</div>
+                        <div class="chat-status" id="chatContactStatus">Choisissez un contact pour discuter</div>
                     </div>
                     <div class="chat-actions">
                         <button onclick="showToast('📞 Appel vidéo')"><i class="fas fa-video"></i></button>
@@ -933,43 +878,11 @@
 
                 <!-- ===== MESSAGES ===== -->
                 <div class="chat-messages" id="chatMessages">
-
-                    <div class="date-divider"><span>Aujourd'hui</span></div>
-
-                    <div class="message received">
-                        Salut Julien ! Comment vas-tu ? 😊
-                        <span class="msg-time">10:23</span>
+                    <div class="empty-chat">
+                        <div class="empty-icon">💬</div>
+                        <h3>Aucune conversation</h3>
+                        <p>Choisissez une conversation dans la liste pour commencer à discuter</p>
                     </div>
-
-                    <div class="message sent">
-                        Coucou Sophie ! Je vais très bien, et toi ?
-                        <span class="msg-time">10:25</span>
-                    </div>
-
-                    <div class="message received">
-                        Super ! Tu fais quoi ce week-end ?
-                        <span class="msg-time">10:28</span>
-                    </div>
-
-                    <div class="message sent">
-                        Rien de prévu pour l'instant, et toi ?
-                        <span class="msg-time">10:30</span>
-                    </div>
-
-                    <div class="message received" id="lastMessage">
-                        Coucou ! Tu fais quoi ce week-end ? 😊
-                        <span class="msg-time">12:34</span>
-                    </div>
-
-                    <!-- Indicateur de saisie -->
-                    <div class="message received" style="background: transparent; padding: 4px 0;">
-                        <div class="typing-dots" style="display: none; gap: 4px; align-items: center; padding: 8px 16px; background: #f0e8e0; border-radius: 18px; width: fit-content;">
-                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #7a6a64; animation: typing 1.2s ease-in-out infinite;"></span>
-                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #7a6a64; animation: typing 1.2s ease-in-out infinite 0.2s;"></span>
-                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #7a6a64; animation: typing 1.2s ease-in-out infinite 0.4s;"></span>
-                        </div>
-                    </div>
-
                 </div>
 
                 <!-- ===== INPUT ===== -->
@@ -1001,175 +914,296 @@
     </div>
 
     <!-- ===== TOAST ===== -->
-    <div class="toast" id="toast" style="position: fixed; bottom: 30px; right: 30px; background: #1e130f; color: #fff; padding: 16px 28px; border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; font-size: 14px; transform: translateY(100px); opacity: 0; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 200;">
-        <i class="fas fa-check-circle" style="color: #2ecc71; font-size: 20px;"></i>
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
         <span id="toastMessage">Message envoyé</span>
-        <button class="toast-close" onclick="closeToast()" style="background: transparent; border: none; color: rgba(255,255,255,0.4); cursor: pointer; font-size: 18px; margin-left: 8px;">✕</button>
+        <button class="toast-close" onclick="closeToast()">✕</button>
     </div>
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
-        let currentContact = 'Sophie';
-        let currentEmoji = '👩';
-        let isOnline = true;
-        let typingTimeout = null;
+        // ===== CONFIGURATION =====
+        const API_URL = window.location.origin + '/api';
+        let currentMatchId = null;
+        let currentContact = null;
+        let currentUserId = null;
+        let allMatchs = [];
+        let isOnline = false;
+        let pollingInterval = null;
+
+        // ===== AUTHENTIFICATION =====
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_URL}/me`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (!data.success) {
+                    window.location.href = 'CONNEXION.HTML';
+                } else {
+                    currentUserId = data.user.id;
+                    document.getElementById('profileInitial').textContent = (data.user.prenom || 'U').charAt(0).toUpperCase();
+                    loadMatchs();
+                    loadStats();
+                }
+            } catch (error) {
+                console.error('Erreur auth:', error);
+                window.location.href = 'CONNEXION.HTML';
+            }
+        }
+
+        // ===== DÉCONNEXION =====
+        async function logout() {
+            try {
+                await fetch(`${API_URL}/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = 'CONNEXION.HTML';
+            } catch (error) {
+                console.error('Erreur déconnexion:', error);
+                alert('Erreur lors de la déconnexion');
+            }
+        }
+
+        // ===== CHARGER LES STATISTIQUES =====
+        async function loadStats() {
+            try {
+                const matchResponse = await fetch(`${API_URL}/matchs`, { credentials: 'include' });
+                const matchData = await matchResponse.json();
+                if (matchData.success) {
+                    const matchCount = matchData.matchs ? matchData.matchs.length : 0;
+                    document.getElementById('matchBadge').textContent = matchCount;
+                }
+
+                const notifResponse = await fetch(`${API_URL}/notifications`, { credentials: 'include' });
+                const notifData = await notifResponse.json();
+                if (notifData.success) {
+                    const unreadCount = notifData.notifications ? notifData.notifications.filter(n => !n.lue).length : 0;
+                    document.getElementById('messageBadge').textContent = unreadCount;
+                }
+            } catch (error) {
+                console.error('Erreur chargement stats:', error);
+            }
+        }
+
+        // ===== CHARGER LES CONVERSATIONS =====
+        async function loadMatchs() {
+            try {
+                const response = await fetch(`${API_URL}/matchs`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success && data.matchs && data.matchs.length > 0) {
+                    allMatchs = data.matchs;
+                    document.getElementById('subtitle').textContent = `💬 ${allMatchs.length} conversations en cours`;
+                    renderConversations();
+                } else {
+                    document.getElementById('subtitle').textContent = '💬 Aucune conversation';
+                    document.getElementById('convList').innerHTML = `
+                        <div style="text-align: center; padding: 40px 20px; color: #b0a49e;">
+                            <div style="font-size: 48px; margin-bottom: 12px;">💕</div>
+                            <p>Aucune conversation pour le moment</p>
+                            <p style="font-size: 13px; margin-top: 4px;">Faites des matchs pour commencer à discuter !</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur chargement matchs:', error);
+            }
+        }
+
+        // ===== AFFICHER LES CONVERSATIONS =====
+        function renderConversations() {
+            const container = document.getElementById('convList');
+            container.innerHTML = '';
+            
+            allMatchs.forEach((match, index) => {
+                const autreId = match.autre_id;
+                const prenom = match.prenom;
+                const age = match.age;
+                const ville = match.ville;
+                const nonLus = match.non_lus || 0;
+                const statut = match.statut || 'hors_ligne';
+                const isOnline = statut === 'en_ligne';
+                
+                // Emoji aléatoire pour l'avatar
+                const emojis = ['👩', '👨', '👩‍🦰', '👨‍🦰', '👩‍🦱', '👨‍🦱', '👩‍🦳', '👨‍🦳'];
+                const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                const convItem = document.createElement('div');
+                convItem.className = 'conv-item' + (index === 0 ? ' active' : '');
+                convItem.dataset.matchId = match.id;
+                convItem.dataset.autreId = autreId;
+                convItem.dataset.prenom = prenom;
+                convItem.dataset.emoji = emoji;
+                convItem.dataset.online = isOnline ? 'true' : 'false';
+                convItem.onclick = function() {
+                    openChat(match.id, autreId, prenom, emoji, isOnline);
+                };
+                
+                convItem.innerHTML = `
+                    <div class="conv-avatar">
+                        ${emoji}
+                        <span class="online-dot ${isOnline ? '' : 'offline'}"></span>
+                    </div>
+                    <div class="conv-info">
+                        <div class="conv-name">
+                            ${prenom}, ${age || '?'} ans
+                            <span class="conv-time"></span>
+                        </div>
+                        <div class="conv-preview">
+                            <span>Cliquez pour voir les messages</span>
+                            ${nonLus > 0 ? `<span class="unread">${nonLus}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(convItem);
+            });
+            
+            // Ouvrir la première conversation par défaut
+            if (allMatchs.length > 0) {
+                const first = allMatchs[0];
+                const prenom = first.prenom;
+                const emojis = ['👩', '👨', '👩‍🦰', '👨‍🦰', '👩‍🦱', '👨‍🦱', '👩‍🦳', '👨‍🦳'];
+                const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                setTimeout(() => {
+                    openChat(first.id, first.autre_id, prenom, emoji, first.statut === 'en_ligne');
+                }, 500);
+            }
+        }
 
         // ===== OUVRIRE UNE CONVERSATION =====
-        function openChat(name, emoji, online) {
-            currentContact = name;
-            currentEmoji = emoji;
+        async function openChat(matchId, autreId, prenom, emoji, online) {
+            currentMatchId = matchId;
+            currentContact = { id: autreId, prenom, emoji, online };
             isOnline = online;
 
             // Mettre à jour le header
-            document.getElementById('chatContactName').textContent = name;
+            document.getElementById('chatContactName').textContent = prenom;
             document.getElementById('chatContactStatus').textContent = online ? '● En ligne' : '● Hors ligne';
-            document.querySelector('.chat-header .chat-avatar').innerHTML = `
+            document.getElementById('chatAvatar').innerHTML = `
                 ${emoji}
                 <span class="online-dot ${online ? '' : 'offline'}"></span>
             `;
 
             // Mettre à jour la liste
             document.querySelectorAll('.conv-item').forEach(item => {
-                item.classList.toggle('active', item.dataset.name === name);
+                item.classList.toggle('active', parseInt(item.dataset.matchId) === matchId);
             });
 
-            // Nettoyer les messages (simulé)
-            const messages = document.getElementById('chatMessages');
-            // Garder quelques messages d'exemple pour la démo
-            if (name === 'Sophie') {
-                messages.innerHTML = `
-                    <div class="date-divider"><span>Aujourd'hui</span></div>
-                    <div class="message received">Salut Julien ! Comment vas-tu ? 😊<span class="msg-time">10:23</span></div>
-                    <div class="message sent">Coucou Sophie ! Je vais très bien, et toi ?<span class="msg-time">10:25</span></div>
-                    <div class="message received">Super ! Tu fais quoi ce week-end ?<span class="msg-time">10:28</span></div>
-                    <div class="message sent">Rien de prévu pour l'instant, et toi ?<span class="msg-time">10:30</span></div>
-                    <div class="message received">Coucou ! Tu fais quoi ce week-end ? 😊<span class="msg-time">12:34</span></div>
-                `;
-            } else if (name === 'Lucas') {
-                messages.innerHTML = `
-                    <div class="date-divider"><span>Hier</span></div>
-                    <div class="message received">Salut Julien ! On se fait un restau ce soir ?<span class="msg-time">19:12</span></div>
-                    <div class="message sent">Carrément ! Quelle heure ?<span class="msg-time">19:15</span></div>
-                    <div class="message received">20h ça te va ?<span class="msg-time">19:18</span></div>
-                    <div class="message sent">Parfait ! À ce soir 😊<span class="msg-time">19:20</span></div>
-                `;
-            } else {
-                messages.innerHTML = `
-                    <div class="date-divider"><span>Cette semaine</span></div>
-                    <div class="message received">Salut Julien ! Comment ça va ?<span class="msg-time">14:32</span></div>
-                    <div class="message sent">Coucou ! Ça va bien et toi ?<span class="msg-time">14:35</span></div>
-                    <div class="message received">Super ! Tu veux qu'on se voie ce week-end ?<span class="msg-time">14:38</span></div>
-                `;
-            }
+            // Charger les messages
+            await loadMessages(matchId);
+            
+            // Marquer les messages comme lus
+            await markMessagesRead(matchId);
+            
+            // Démarrer le polling pour les nouveaux messages
+            startPolling(matchId);
+        }
 
-            // Ajouter l'indicateur de saisie
-            messages.innerHTML += `
-                <div class="message received" style="background: transparent; padding: 4px 0;">
-                    <div class="typing-dots" style="display: none; gap: 4px; align-items: center; padding: 8px 16px; background: #f0e8e0; border-radius: 18px; width: fit-content;">
-                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #7a6a64; animation: typing 1.2s ease-in-out infinite;"></span>
-                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #7a6a64; animation: typing 1.2s ease-in-out infinite 0.2s;"></span>
-                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #7a6a64; animation: typing 1.2s ease-in-out infinite 0.4s;"></span>
-                    </div>
-                </div>
-            `;
-
-            // Scroll en bas
-            scrollToBottom();
-
-            // Simuler une saisie
-            if (online) {
-                setTimeout(() => {
-                    const dots = document.querySelector('.typing-dots');
-                    if (dots) dots.style.display = 'flex';
-                    scrollToBottom();
-
-                    // Simuler la fin de la saisie
-                    setTimeout(() => {
-                        if (dots) dots.style.display = 'none';
-                        // Ajouter un message reçu
-                        const newMsg = document.createElement('div');
-                        newMsg.className = 'message received';
-                        const messagesList = [
-                            'C\'est noté ! 😊',
-                            'Super, on se dit ça alors !',
-                            'Parfait ! À très vite 💕',
-                            'J\'ai hâte ! 😍',
-                            'Cool, je te tiens au courant !'
-                        ];
-                        newMsg.innerHTML = `${messagesList[Math.floor(Math.random() * messagesList.length)]}<span class="msg-time">${new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})}</span>`;
-                        const typingDots = document.querySelector('.typing-dots');
-                        if (typingDots) {
-                            typingDots.parentElement.parentElement.insertBefore(newMsg, typingDots.parentElement);
-                        } else {
-                            document.getElementById('chatMessages').appendChild(newMsg);
+        // ===== CHARGER LES MESSAGES =====
+        async function loadMessages(matchId) {
+            try {
+                const response = await fetch(`${API_URL}/messages/${matchId}`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                const messagesContainer = document.getElementById('chatMessages');
+                messagesContainer.innerHTML = '';
+                
+                if (data.success && data.messages && data.messages.length > 0) {
+                    let lastDate = '';
+                    data.messages.forEach(msg => {
+                        const date = new Date(msg.date_envoi);
+                        const dateStr = date.toLocaleDateString('fr-FR');
+                        
+                        if (dateStr !== lastDate) {
+                            lastDate = dateStr;
+                            const divider = document.createElement('div');
+                            divider.className = 'date-divider';
+                            divider.innerHTML = `<span>${dateStr}</span>`;
+                            messagesContainer.appendChild(divider);
                         }
-                        scrollToBottom();
-                    }, 2000 + Math.random() * 1500);
-                }, 500 + Math.random() * 800);
+                        
+                        const msgEl = document.createElement('div');
+                        msgEl.className = `message ${msg.expediteur_id === currentUserId ? 'sent' : 'received'}`;
+                        msgEl.innerHTML = `
+                            ${msg.contenu}
+                            <span class="msg-time">${date.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})}</span>
+                        `;
+                        messagesContainer.appendChild(msgEl);
+                    });
+                } else {
+                    messagesContainer.innerHTML = `
+                        <div class="empty-chat">
+                            <div class="empty-icon">💬</div>
+                            <h3>Pas encore de messages</h3>
+                            <p>Soyez le premier à envoyer un message !</p>
+                        </div>
+                    `;
+                }
+                
+                scrollToBottom();
+            } catch (error) {
+                console.error('Erreur chargement messages:', error);
             }
         }
 
+        // ===== MARQUER LES MESSAGES COMME LUS =====
+        async function markMessagesRead(matchId) {
+            try {
+                // L'API les marque comme lus automatiquement quand on les récupère
+                // Mais on peut ajouter un appel spécifique si besoin
+            } catch (error) {
+                console.error('Erreur marquage lu:', error);
+            }
+        }
+
+        // ===== POLLING POUR LES NOUVEAUX MESSAGES =====
+        function startPolling(matchId) {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+            pollingInterval = setInterval(() => {
+                if (currentMatchId === matchId) {
+                    loadMessages(matchId);
+                }
+            }, 5000);
+        }
+
         // ===== ENVOYER UN MESSAGE =====
-        function sendMessage() {
+        async function sendMessage() {
             const input = document.getElementById('chatInput');
             const text = input.value.trim();
-            if (!text) return;
+            if (!text || !currentMatchId || !currentContact) return;
 
-            // Ajouter le message
-            const messages = document.getElementById('chatMessages');
-            const newMsg = document.createElement('div');
-            newMsg.className = 'message sent';
-            newMsg.innerHTML = `${text}<span class="msg-time">${new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})}</span>`;
-            const typingDots = document.querySelector('.typing-dots');
-            if (typingDots) {
-                messages.insertBefore(newMsg, typingDots.parentElement);
-            } else {
-                messages.appendChild(newMsg);
-            }
-
-            input.value = '';
-            scrollToBottom();
-
-            // Simuler une réponse automatique
-            if (isOnline) {
-                setTimeout(() => {
-                    const dots = document.querySelector('.typing-dots');
-                    if (dots) dots.style.display = 'flex';
-                    scrollToBottom();
-
-                    setTimeout(() => {
-                        if (dots) dots.style.display = 'none';
-                        const reply = document.createElement('div');
-                        reply.className = 'message received';
-                        const replies = [
-                            'Ah super ! 😊',
-                            'Moi aussi ! ❤️',
-                            'Trop bien !',
-                            'On fait ça alors !',
-                            'Parfait ! 💕',
-                            'J\'adore cette idée !',
-                            'Hâte de te voir !',
-                            'Cool, je suis partant(e) !'
-                        ];
-                        reply.innerHTML = `${replies[Math.floor(Math.random() * replies.length)]}<span class="msg-time">${new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})}</span>`;
-                        const typingDotsEl = document.querySelector('.typing-dots');
-                        if (typingDotsEl) {
-                            messages.insertBefore(reply, typingDotsEl.parentElement);
-                        } else {
-                            messages.appendChild(reply);
-                        }
-                        scrollToBottom();
-                    }, 1000 + Math.random() * 1500);
-                }, 500 + Math.random() * 800);
-            }
-
-            // Mettre à jour la preview dans la liste
-            const activeConv = document.querySelector('.conv-item.active');
-            if (activeConv) {
-                const preview = activeConv.querySelector('.conv-preview span:first-child');
-                if (preview) preview.textContent = text;
-                const time = activeConv.querySelector('.conv-time');
-                if (time) time.textContent = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+            try {
+                const response = await fetch(`${API_URL}/messages/send`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        match_id: currentMatchId,
+                        destinataire_id: currentContact.id,
+                        contenu: text
+                    }),
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    input.value = '';
+                    await loadMessages(currentMatchId);
+                    showToast('✅ Message envoyé');
+                } else {
+                    showToast('❌ Erreur lors de l\'envoi');
+                }
+            } catch (error) {
+                console.error('Erreur envoi message:', error);
+                showToast('❌ Erreur de connexion');
             }
         }
 
@@ -1177,7 +1211,7 @@
         function filterConversations() {
             const query = document.getElementById('searchConv').value.toLowerCase();
             document.querySelectorAll('.conv-item').forEach(item => {
-                const name = item.dataset.name.toLowerCase();
+                const name = item.dataset.prenom.toLowerCase();
                 item.style.display = name.includes(query) ? 'flex' : 'none';
             });
         }
@@ -1216,12 +1250,7 @@
         });
 
         // ===== INITIALISATION =====
-        scrollToBottom();
-
-        // Ouvrir la première conversation par défaut
-        setTimeout(() => {
-            openChat('Sophie', '👩', true);
-        }, 300);
+        document.addEventListener('DOMContentLoaded', checkAuth);
     </script>
 
 </body>

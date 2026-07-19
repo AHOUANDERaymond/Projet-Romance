@@ -56,11 +56,6 @@
             50% { transform: translateY(-6px); }
         }
 
-        @keyframes shimmer {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-
         .animate {
             animation: fadeInUp 0.8s ease forwards;
         }
@@ -151,6 +146,25 @@
             border-color: #c0392b;
         }
 
+        /* ===== BOUTON DÉCONNEXION ===== */
+        .btn-logout {
+            padding: 8px 20px;
+            border: 1.5px solid #e74c3c;
+            border-radius: 50px;
+            background: transparent;
+            color: #e74c3c;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-logout:hover {
+            background: #e74c3c;
+            color: #fff;
+        }
+
         /* ===== PAGE HEADER ===== */
         .page-header {
             display: flex;
@@ -182,6 +196,7 @@
         .header-actions {
             display: flex;
             gap: 12px;
+            align-items: center;
         }
 
         .btn-outline-sm {
@@ -749,15 +764,15 @@
 
         <!-- ===== HEADER ===== -->
         <header>
-            <a href="index.html" class="logo">
+            <a href="INDEX.HTML" class="logo">
                 <span>❤️</span> Cœurs Connectés
             </a>
             <nav>
                 <a href="dashboard.html"><i class="fas fa-compass"></i> <span>Découvrir</span></a>
-                <a href="matchs.html"><i class="fas fa-heart"></i> <span>Matchs</span> <span class="badge">12</span></a>
-                <a href="messages.html"><i class="fas fa-comment-dots"></i> <span>Messages</span> <span class="badge">4</span></a>
+                <a href="matchs.html"><i class="fas fa-heart"></i> <span>Matchs</span> <span class="badge" id="matchBadge">0</span></a>
+                <a href="messages.html"><i class="fas fa-comment-dots"></i> <span>Messages</span> <span class="badge" id="messageBadge">0</span></a>
                 <a href="profil.html" class="active"><i class="fas fa-user"></i> <span>Profil</span></a>
-                <div class="nav-profile" onclick="window.location.href='profil.html'" title="Mon profil">JD</div>
+                <div class="nav-profile" onclick="window.location.href='profil.html'" title="Mon profil" id="profileInitial">JD</div>
             </nav>
         </header>
 
@@ -773,6 +788,9 @@
                 </button>
                 <button class="btn-primary-sm" onclick="previewProfile()">
                     <i class="fas fa-eye"></i> <span>Aperçu</span>
+                </button>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
                 </button>
             </div>
         </div>
@@ -790,24 +808,24 @@
                         <i class="fas fa-camera"></i>
                     </button>
                 </div>
-                <div class="profile-name" id="profileName">Julien</div>
-                <div class="profile-age" id="profileAge">29 ans</div>
-                <div class="profile-location"><i class="fas fa-map-pin"></i> <span id="profileCity">Paris</span>, 3 km</div>
+                <div class="profile-name" id="profileName">Chargement...</div>
+                <div class="profile-age" id="profileAge">-- ans</div>
+                <div class="profile-location"><i class="fas fa-map-pin"></i> <span id="profileCity">--</span></div>
                 <span class="profile-status" id="profileStatus">● En ligne</span>
 
                 <div class="divider"></div>
 
                 <div class="profile-stats">
                     <div class="stat">
-                        <div class="number">12</div>
+                        <div class="number" id="statMatchs">0</div>
                         <div class="label">Matchs</div>
                     </div>
                     <div class="stat">
-                        <div class="number">8</div>
+                        <div class="number" id="statMessages">0</div>
                         <div class="label">Messages</div>
                     </div>
                     <div class="stat">
-                        <div class="number">94%</div>
+                        <div class="number" id="statCompletude">0%</div>
                         <div class="label">Complétude</div>
                     </div>
                 </div>
@@ -826,11 +844,9 @@
                         <h2><i class="fas fa-quote-left" style="color: #c0392b; font-size: 18px;"></i> À propos</h2>
                         <button class="edit-btn" onclick="toggleEditMode()">Modifier</button>
                     </div>
-                    <div class="bio-text" id="bioText">
-                        Passionné par l'art, les voyages et la bonne cuisine. Je cherche une personne avec qui partager des aventures et des moments simples. Grand amateur de café et de concerts en plein air.
-                    </div>
+                    <div class="bio-text" id="bioText">Chargement...</div>
                     <div class="bio-text" id="bioEdit" style="display: none;">
-                        <textarea id="bioInput" style="width: 100%; padding: 14px; border: 1.5px solid #e8e0da; border-radius: 14px; font-size: 15px; font-family: 'Inter', sans-serif; background: #fcfaf8; min-height: 100px; resize: vertical; transition: border-color 0.3s;">Passionné par l'art, les voyages et la bonne cuisine. Je cherche une personne avec qui partager des aventures et des moments simples. Grand amateur de café et de concerts en plein air.</textarea>
+                        <textarea id="bioInput" style="width: 100%; padding: 14px; border: 1.5px solid #e8e0da; border-radius: 14px; font-size: 15px; font-family: 'Inter', sans-serif; background: #fcfaf8; min-height: 100px; resize: vertical; transition: border-color 0.3s;"></textarea>
                     </div>
                 </div>
 
@@ -841,27 +857,11 @@
                         <button class="edit-btn" onclick="toggleEditMode()">Modifier</button>
                     </div>
                     <div class="tags-container" id="tagsContainer">
-                        <span class="tag"><i class="fas fa-palette"></i> Art</span>
-                        <span class="tag"><i class="fas fa-plane"></i> Voyage</span>
-                        <span class="tag"><i class="fas fa-utensils"></i> Cuisine</span>
-                        <span class="tag"><i class="fas fa-headphones"></i> Musique</span>
-                        <span class="tag"><i class="fas fa-book"></i> Lecture</span>
-                        <span class="tag"><i class="fas fa-camera"></i> Photo</span>
+                        <!-- Les tags seront chargés dynamiquement -->
                     </div>
                     <div class="tags-container" id="tagsEdit" style="display: none;">
-                        <div class="tags-grid" style="display: flex; flex-wrap: wrap; gap: 10px;">
-                            <span class="tag selected" style="cursor: pointer; background: #c0392b; color: #fff;" onclick="toggleTag(this)"><i class="fas fa-palette"></i> Art</span>
-                            <span class="tag selected" style="cursor: pointer; background: #c0392b; color: #fff;" onclick="toggleTag(this)"><i class="fas fa-plane"></i> Voyage</span>
-                            <span class="tag selected" style="cursor: pointer; background: #c0392b; color: #fff;" onclick="toggleTag(this)"><i class="fas fa-utensils"></i> Cuisine</span>
-                            <span class="tag selected" style="cursor: pointer; background: #c0392b; color: #fff;" onclick="toggleTag(this)"><i class="fas fa-headphones"></i> Musique</span>
-                            <span class="tag selected" style="cursor: pointer; background: #c0392b; color: #fff;" onclick="toggleTag(this)"><i class="fas fa-book"></i> Lecture</span>
-                            <span class="tag selected" style="cursor: pointer; background: #c0392b; color: #fff;" onclick="toggleTag(this)"><i class="fas fa-camera"></i> Photo</span>
-                            <span class="tag" style="cursor: pointer;" onclick="toggleTag(this)"><i class="fas fa-running"></i> Sport</span>
-                            <span class="tag" style="cursor: pointer;" onclick="toggleTag(this)"><i class="fas fa-film"></i> Cinéma</span>
-                            <span class="tag" style="cursor: pointer;" onclick="toggleTag(this)"><i class="fas fa-leaf"></i> Nature</span>
-                            <span class="tag" style="cursor: pointer;" onclick="toggleTag(this)"><i class="fas fa-paw"></i> Animaux</span>
-                            <span class="tag" style="cursor: pointer;" onclick="toggleTag(this)"><i class="fas fa-gamepad"></i> Jeux vidéo</span>
-                            <span class="tag" style="cursor: pointer;" onclick="toggleTag(this)"><i class="fas fa-music"></i> Danse</span>
+                        <div class="tags-grid" style="display: flex; flex-wrap: wrap; gap: 10px;" id="allTags">
+                            <!-- Les tags seront chargés dynamiquement -->
                         </div>
                     </div>
                 </div>
@@ -875,59 +875,60 @@
                     <div class="info-grid" id="infoGrid">
                         <div class="info-item">
                             <span class="label">Âge</span>
-                            <span class="value" id="infoAge">29 ans</span>
+                            <span class="value" id="infoAge">--</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Genre</span>
-                            <span class="value" id="infoGender">Homme</span>
+                            <span class="value" id="infoGender">--</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Orientation</span>
-                            <span class="value" id="infoOrientation">Hétérosexuel</span>
+                            <span class="value" id="infoOrientation">--</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Ville</span>
-                            <span class="value" id="infoCity">Paris</span>
+                            <span class="value" id="infoCity">--</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Profession</span>
-                            <span class="value" id="infoProfession">Designer UI/UX</span>
+                            <span class="value" id="infoProfession">--</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Membre depuis</span>
-                            <span class="value" id="infoMember">Juin 2026</span>
+                            <span class="value" id="infoMember">--</span>
                         </div>
                     </div>
                     <div class="info-grid edit-mode" id="infoEdit" style="display: none;">
                         <div class="info-item">
                             <span class="label">Âge</span>
-                            <input type="number" id="editAge" value="29" min="18" max="99" />
+                            <input type="number" id="editAge" min="18" max="99" />
                         </div>
                         <div class="info-item">
                             <span class="label">Genre</span>
                             <select id="editGender">
-                                <option value="Homme" selected>Homme</option>
-                                <option value="Femme">Femme</option>
-                                <option value="Non-binaire">Non-binaire</option>
-                                <option value="Autre">Autre</option>
+                                <option value="homme">Homme</option>
+                                <option value="femme">Femme</option>
+                                <option value="non-binaire">Non-binaire</option>
+                                <option value="autre">Autre</option>
                             </select>
                         </div>
                         <div class="info-item">
                             <span class="label">Orientation</span>
                             <select id="editOrientation">
-                                <option value="Hétérosexuel" selected>Hétérosexuel</option>
-                                <option value="Bisexuel">Bisexuel</option>
-                                <option value="Pansexuel">Pansexuel</option>
-                                <option value="Asexuel">Asexuel</option>
+                                <option value="heterosexuel">Hétérosexuel</option>
+                                <option value="bisexuel">Bisexuel</option>
+                                <option value="pansexuel">Pansexuel</option>
+                                <option value="asexuel">Asexuel</option>
+                                <option value="autre">Autre</option>
                             </select>
                         </div>
                         <div class="info-item">
                             <span class="label">Ville</span>
-                            <input type="text" id="editCity" value="Paris" />
+                            <input type="text" id="editCity" />
                         </div>
                         <div class="info-item">
                             <span class="label">Profession</span>
-                            <input type="text" id="editProfession" value="Designer UI/UX" />
+                            <input type="text" id="editProfession" />
                         </div>
                     </div>
                 </div>
@@ -939,18 +940,6 @@
                         <button class="edit-btn" onclick="addPhoto()"><i class="fas fa-plus"></i> Ajouter</button>
                     </div>
                     <div class="photo-grid" id="photoGrid">
-                        <div class="photo-item" style="background: linear-gradient(135deg, #f5ede7, #e8dbd2);">
-                            👩
-                            <div class="photo-overlay"><i class="fas fa-eye"></i></div>
-                        </div>
-                        <div class="photo-item" style="background: linear-gradient(135deg, #e8f0ee, #d5e0dc);">
-                            🌄
-                            <div class="photo-overlay"><i class="fas fa-eye"></i></div>
-                        </div>
-                        <div class="photo-item" style="background: linear-gradient(135deg, #f0e8f0, #e0d6e0);">
-                            🍳
-                            <div class="photo-overlay"><i class="fas fa-eye"></i></div>
-                        </div>
                         <div class="photo-item add-photo" onclick="addPhoto()">
                             <i class="fas fa-plus" style="font-size: 28px; color: #b0a49e;"></i>
                             <span style="font-size: 12px; color: #b0a49e; margin-top: 4px;">Ajouter</span>
@@ -982,25 +971,205 @@
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
+        // ===== CONFIGURATION =====
+        const API_URL = window.location.origin + '/api';
         let isEditMode = false;
+        let currentUser = null;
+        let userInterets = [];
+        let allInterets = [];
+
+        // ===== AUTHENTIFICATION =====
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_URL}/me`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (!data.success) {
+                    window.location.href = 'CONNEXION.HTML';
+                } else {
+                    currentUser = data.user;
+                    loadProfile();
+                    loadStats();
+                    loadInterets();
+                }
+            } catch (error) {
+                console.error('Erreur auth:', error);
+                window.location.href = 'CONNEXION.HTML';
+            }
+        }
+
+        // ===== DÉCONNEXION =====
+        async function logout() {
+            try {
+                await fetch(`${API_URL}/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = 'CONNEXION.HTML';
+            } catch (error) {
+                console.error('Erreur déconnexion:', error);
+                alert('Erreur lors de la déconnexion');
+            }
+        }
+
+        // ===== CHARGER LE PROFIL =====
+        function loadProfile() {
+            if (!currentUser) return;
+
+            // Carte de profil
+            document.getElementById('profileName').textContent = currentUser.prenom || 'Utilisateur';
+            document.getElementById('profileAge').textContent = (currentUser.age || '--') + ' ans';
+            document.getElementById('profileCity').textContent = currentUser.ville || '--';
+            document.getElementById('profileInitial').textContent = (currentUser.prenom || 'U').charAt(0).toUpperCase();
+            
+            // Statut
+            const statusEl = document.getElementById('profileStatus');
+            if (currentUser.statut === 'en_ligne') {
+                statusEl.textContent = '● En ligne';
+                statusEl.className = 'profile-status';
+            } else {
+                statusEl.textContent = '● Hors ligne';
+                statusEl.className = 'profile-status offline';
+            }
+
+            // Avatar (emoji basé sur le genre)
+            const avatarEmojis = {
+                'homme': '👨',
+                'femme': '👩',
+                'non-binaire': '🧑',
+                'autre': '🧑'
+            };
+            document.getElementById('avatarEmoji').textContent = avatarEmojis[currentUser.genre] || '👤';
+
+            // Bio
+            document.getElementById('bioText').textContent = currentUser.bio || 'Aucune bio pour le moment.';
+            document.getElementById('bioInput').value = currentUser.bio || '';
+
+            // Informations
+            document.getElementById('infoAge').textContent = (currentUser.age || '--') + ' ans';
+            document.getElementById('infoGender').textContent = currentUser.genre || '--';
+            document.getElementById('infoOrientation').textContent = currentUser.orientation || '--';
+            document.getElementById('infoCity').textContent = currentUser.ville || '--';
+            document.getElementById('infoProfession').textContent = currentUser.profession || '--';
+            document.getElementById('infoMember').textContent = currentUser.cree_le ? new Date(currentUser.cree_le).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : '--';
+
+            // Champs édition
+            document.getElementById('editAge').value = currentUser.age || '';
+            document.getElementById('editGender').value = currentUser.genre || 'homme';
+            document.getElementById('editOrientation').value = currentUser.orientation || 'heterosexuel';
+            document.getElementById('editCity').value = currentUser.ville || '';
+            document.getElementById('editProfession').value = currentUser.profession || '';
+        }
+
+        // ===== CHARGER LES STATISTIQUES =====
+        async function loadStats() {
+            try {
+                const matchResponse = await fetch(`${API_URL}/matchs`, { credentials: 'include' });
+                const matchData = await matchResponse.json();
+                if (matchData.success) {
+                    const matchCount = matchData.matchs ? matchData.matchs.length : 0;
+                    document.getElementById('statMatchs').textContent = matchCount;
+                    document.getElementById('matchBadge').textContent = matchCount;
+                }
+
+                const notifResponse = await fetch(`${API_URL}/notifications`, { credentials: 'include' });
+                const notifData = await notifResponse.json();
+                if (notifData.success) {
+                    const unreadCount = notifData.notifications ? notifData.notifications.filter(n => !n.lue).length : 0;
+                    document.getElementById('messageBadge').textContent = unreadCount;
+                }
+
+                // Complétude du profil
+                let completude = 0;
+                if (currentUser.prenom) completude += 20;
+                if (currentUser.bio) completude += 20;
+                if (currentUser.ville) completude += 15;
+                if (currentUser.age) completude += 15;
+                if (currentUser.profession) completude += 10;
+                if (currentUser.photo_profil) completude += 20;
+                document.getElementById('statCompletude').textContent = Math.min(completude, 100) + '%';
+            } catch (error) {
+                console.error('Erreur chargement stats:', error);
+            }
+        }
+
+        // ===== CHARGER LES CENTRES D'INTÉRÊT =====
+        async function loadInterets() {
+            try {
+                // Récupérer tous les intérêts disponibles
+                const allResponse = await fetch(`${API_URL}/profil/interets`, { credentials: 'include' });
+                const allData = await allResponse.json();
+                if (allData.success) {
+                    allInterets = allData.interets || [];
+                }
+
+                // Afficher les intérêts de l'utilisateur
+                const container = document.getElementById('tagsContainer');
+                container.innerHTML = '';
+                if (currentUser.interets && currentUser.interets.length > 0) {
+                    currentUser.interets.forEach(interet => {
+                        const span = document.createElement('span');
+                        span.className = 'tag';
+                        span.innerHTML = `${interet.icone || '❤️'} ${interet.nom}`;
+                        container.appendChild(span);
+                    });
+                } else {
+                    container.innerHTML = '<span style="color: #b0a49e;">Aucun centre d\'intérêt renseigné</span>';
+                }
+
+                // Construire la liste d'édition
+                buildEditTags();
+            } catch (error) {
+                console.error('Erreur chargement interets:', error);
+            }
+        }
+
+        // ===== CONSTRUIRE LES TAGS EN MODE ÉDITION =====
+        function buildEditTags() {
+            const container = document.getElementById('allTags');
+            container.innerHTML = '';
+            
+            const userInteretIds = (currentUser.interets || []).map(i => i.id);
+            
+            allInterets.forEach(interet => {
+                const span = document.createElement('span');
+                span.className = 'tag';
+                if (userInteretIds.includes(interet.id)) {
+                    span.classList.add('selected');
+                    span.style.background = '#c0392b';
+                    span.style.color = '#fff';
+                }
+                span.innerHTML = `${interet.icone || '❤️'} ${interet.nom}`;
+                span.dataset.id = interet.id;
+                span.onclick = function() { toggleTag(this); };
+                container.appendChild(span);
+            });
+        }
+
+        // ===== TOGGLE TAG =====
+        function toggleTag(element) {
+            element.classList.toggle('selected');
+            if (element.classList.contains('selected')) {
+                element.style.background = '#c0392b';
+                element.style.color = '#fff';
+            } else {
+                element.style.background = '#f5ede7';
+                element.style.color = '#5a4a44';
+            }
+        }
 
         // ===== TOGGLE MODE ÉDITION =====
         function toggleEditMode() {
             isEditMode = !isEditMode;
 
-            // Bio
             document.getElementById('bioText').style.display = isEditMode ? 'none' : 'block';
             document.getElementById('bioEdit').style.display = isEditMode ? 'block' : 'none';
-
-            // Tags
             document.getElementById('tagsContainer').style.display = isEditMode ? 'none' : 'flex';
             document.getElementById('tagsEdit').style.display = isEditMode ? 'flex' : 'none';
-
-            // Infos
             document.getElementById('infoGrid').style.display = isEditMode ? 'none' : 'grid';
             document.getElementById('infoEdit').style.display = isEditMode ? 'grid' : 'none';
 
-            // Bouton
             const btn = document.getElementById('editToggleBtn');
             if (isEditMode) {
                 btn.innerHTML = '<i class="fas fa-save"></i> <span>Sauvegarder</span>';
@@ -1018,98 +1187,134 @@
         }
 
         // ===== SAUVEGARDER LE PROFIL =====
-        function saveProfile() {
-            // Récupérer les valeurs
+        async function saveProfile() {
             const bio = document.getElementById('bioInput').value;
-            const age = document.getElementById('editAge').value;
-            const gender = document.getElementById('editGender').value;
+            const age = parseInt(document.getElementById('editAge').value);
+            const genre = document.getElementById('editGender').value;
             const orientation = document.getElementById('editOrientation').value;
-            const city = document.getElementById('editCity').value;
+            const ville = document.getElementById('editCity').value;
             const profession = document.getElementById('editProfession').value;
 
-            // Mettre à jour l'affichage
-            document.getElementById('bioText').textContent = bio;
-            document.getElementById('infoAge').textContent = age + ' ans';
-            document.getElementById('infoGender').textContent = gender;
-            document.getElementById('infoOrientation').textContent = orientation;
-            document.getElementById('infoCity').textContent = city;
-            document.getElementById('infoProfession').textContent = profession;
-            document.getElementById('profileAge').textContent = age + ' ans';
-            document.getElementById('profileCity').textContent = city;
-
             // Récupérer les tags sélectionnés
-            const selectedTags = [];
-            document.querySelectorAll('#tagsEdit .tag.selected').forEach(tag => {
-                selectedTags.push(tag.textContent.trim());
+            const selectedInteretIds = [];
+            document.querySelectorAll('#allTags .tag.selected').forEach(tag => {
+                selectedInteretIds.push(parseInt(tag.dataset.id));
             });
 
-            // Mettre à jour l'affichage des tags
-            const tagsContainer = document.getElementById('tagsContainer');
-            tagsContainer.innerHTML = '';
-            selectedTags.forEach(tagText => {
-                const span = document.createElement('span');
-                span.className = 'tag';
-                // Extraire l'icône et le texte
-                const iconMatch = tagText.match(/<i class="([^"]+)"><\/i>/);
-                if (iconMatch) {
-                    span.innerHTML = tagText;
+            try {
+                // Mettre à jour le profil
+                const profileResponse = await fetch(`${API_URL}/profil/update`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        bio,
+                        age,
+                        genre,
+                        orientation,
+                        ville,
+                        profession
+                    }),
+                    credentials: 'include'
+                });
+                const profileData = await profileResponse.json();
+
+                // Mettre à jour les intérêts
+                const interetResponse = await fetch(`${API_URL}/profil/interets`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ interets: selectedInteretIds }),
+                    credentials: 'include'
+                });
+                const interetData = await interetResponse.json();
+
+                if (profileData.success && interetData.success) {
+                    // Recharger les données
+                    await checkAuth();
+                    showToast('✅ Profil mis à jour avec succès !');
+                    toggleEditMode();
                 } else {
-                    span.textContent = tagText;
+                    showToast('❌ Erreur lors de la mise à jour');
                 }
-                tagsContainer.appendChild(span);
-            });
-
-            // Quitter le mode édition
-            isEditMode = true;
-            toggleEditMode();
-
-            // Afficher un toast de succès
-            showToast('✅ Profil mis à jour avec succès !');
-        }
-
-        // ===== TOGGLE TAG (mode édition) =====
-        function toggleTag(element) {
-            element.classList.toggle('selected');
-            if (element.classList.contains('selected')) {
-                element.style.background = '#c0392b';
-                element.style.color = '#fff';
-            } else {
-                element.style.background = '#f5ede7';
-                element.style.color = '#5a4a44';
+            } catch (error) {
+                console.error('Erreur sauvegarde:', error);
+                showToast('❌ Erreur de connexion au serveur');
             }
         }
 
         // ===== CHANGER L'AVATAR =====
-        const avatars = ['👨', '👩', '🧑', '👨‍🦰', '👩‍🦰', '👨‍🦱', '👩‍🦱', '👨‍🦳', '👩‍🦳'];
-        let avatarIndex = 0;
-
         function changeAvatar() {
-            avatarIndex = (avatarIndex + 1) % avatars.length;
-            document.getElementById('avatarEmoji').textContent = avatars[avatarIndex];
-            showToast('🖼️ Photo de profil mise à jour');
+            // Ouvrir un sélecteur de fichier
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const formData = new FormData();
+                formData.append('photo', file);
+                
+                try {
+                    const response = await fetch(`${API_URL}/photo/upload`, {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        showToast('✅ Photo de profil mise à jour !');
+                        setTimeout(checkAuth, 1000);
+                    } else {
+                        showToast('❌ Erreur lors de l\'upload');
+                    }
+                } catch (error) {
+                    console.error('Erreur upload:', error);
+                    showToast('❌ Erreur de connexion');
+                }
+            };
+            input.click();
         }
 
         // ===== AJOUTER UNE PHOTO =====
         function addPhoto() {
-            // Simuler l'ajout d'une photo
-            const grid = document.getElementById('photoGrid');
-            const addItem = grid.querySelector('.add-photo');
-
-            const newPhoto = document.createElement('div');
-            newPhoto.className = 'photo-item';
-            const emojis = ['🏖️', '🏔️', '🌊', '🌺', '🎭', '🎪', '🏰', '🌅'];
-            newPhoto.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-            newPhoto.innerHTML += `<div class="photo-overlay"><i class="fas fa-eye"></i></div>`;
-            newPhoto.style.background = 'linear-gradient(135deg, #f5ede7, #e8dbd2)';
-            newPhoto.onclick = function() { showToast('🖼️ Photo agrandie'); };
-
-            grid.insertBefore(newPhoto, addItem);
-            showToast('📸 Photo ajoutée avec succès !');
-
-            // Limiter à 6 photos
-            if (grid.children.length > 6) {
-                grid.removeChild(grid.children[0]);
-            }
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const formData = new FormData();
+                formData.append('photo', file);
+                
+                try {
+                    const response = await fetch(`${API_URL}/photo/upload`, {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        showToast('📸 Photo ajoutée avec succès !');
+                        // Ajouter visuellement la photo
+                        const grid = document.getElementById('photoGrid');
+                        const newPhoto = document.createElement('div');
+                        newPhoto.className = 'photo-item';
+                        newPhoto.style.background = 'linear-gradient(135deg, #f5ede7, #e8dbd2)';
+                        newPhoto.innerHTML = `
+                            📷
+                            <div class="photo-overlay"><i class="fas fa-eye"></i></div>
+                        `;
+                        grid.insertBefore(newPhoto, grid.querySelector('.add-photo'));
+                    } else {
+                        showToast('❌ Erreur lors de l\'upload');
+                    }
+                } catch (error) {
+                    console.error('Erreur upload:', error);
+                    showToast('❌ Erreur de connexion');
+                }
+            };
+            input.click();
         }
 
         // ===== APERÇU DU PROFIL =====
@@ -1141,20 +1346,15 @@
                 closeToast();
                 if (isEditMode) {
                     if (confirm('Voulez-vous annuler les modifications ?')) {
-                        isEditMode = true;
+                        isEditMode = false;
                         toggleEditMode();
                     }
                 }
             }
         });
 
-        // ===== INITALISATION DES TAGS EN MODE ÉDITION =====
-        document.querySelectorAll('#tagsEdit .tag').forEach(tag => {
-            if (tag.classList.contains('selected')) {
-                tag.style.background = '#c0392b';
-                tag.style.color = '#fff';
-            }
-        });
+        // ===== INITIALISATION =====
+        document.addEventListener('DOMContentLoaded', checkAuth);
     </script>
 
 </body>

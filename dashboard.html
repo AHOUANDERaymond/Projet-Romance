@@ -206,6 +206,7 @@
         .dashboard-hero .action-buttons {
             display: flex;
             gap: 12px;
+            align-items: center;
         }
 
         .btn-outline-sm {
@@ -249,6 +250,24 @@
         .btn-primary-sm:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(192, 57, 43, 0.3);
+        }
+
+        .btn-logout {
+            padding: 8px 20px;
+            border: 1.5px solid #e74c3c;
+            border-radius: 50px;
+            background: transparent;
+            color: #e74c3c;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-logout:hover {
+            background: #e74c3c;
+            color: #fff;
         }
 
         /* ===== SECTION FILTRES ===== */
@@ -782,15 +801,15 @@
 
         <!-- ===== HEADER ===== -->
         <header>
-            <a href="index.html" class="logo">
+            <a href="INDEX.HTML" class="logo">
                 <span>❤️</span> Cœurs Connectés
             </a>
             <nav>
                 <a href="dashboard.html" class="active"><i class="fas fa-compass"></i> <span>Découvrir</span></a>
-                <a href="matchs.html"><i class="fas fa-heart"></i> <span>Matchs</span> <span class="badge">12</span></a>
-                <a href="messages.html"><i class="fas fa-comment-dots"></i> <span>Messages</span> <span class="badge">4</span></a>
+                <a href="matchs.html"><i class="fas fa-heart"></i> <span>Matchs</span> <span class="badge" id="matchBadge">0</span></a>
+                <a href="messages.html"><i class="fas fa-comment-dots"></i> <span>Messages</span> <span class="badge" id="messageBadge">0</span></a>
                 <a href="profil.html"><i class="fas fa-user"></i> <span>Profil</span></a>
-                <div class="nav-profile" onclick="window.location.href='profil.html'" title="Mon profil">JD</div>
+                <div class="nav-profile" onclick="window.location.href='profil.html'" title="Mon profil" id="profileInitial">JD</div>
             </nav>
         </header>
 
@@ -798,156 +817,29 @@
         <div class="dashboard-hero">
             <div>
                 <div class="greeting">
-                    Bonjour, <span>Julien</span> <i class="fas fa-heart" style="font-size: 24px;"></i>
+                    Bonjour, <span id="userName">Julien</span> <i class="fas fa-heart" style="font-size: 24px;"></i>
                 </div>
-                <div class="sub-greeting">💕 12 personnes ont aimé votre profil cette semaine</div>
+                <div class="sub-greeting" id="likesCount">💕 Chargement...</div>
             </div>
             <div class="action-buttons">
                 <button class="btn-outline-sm"><i class="fas fa-sliders-h"></i> <span>Filtres</span></button>
                 <button class="btn-primary-sm"><i class="fas fa-rocket"></i> <span>Boost</span></button>
+                <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
             </div>
         </div>
 
         <!-- ===== FILTRES ===== -->
         <div class="filter-section">
-            <button class="filter-chip active"><i class="fas fa-utensils"></i> Tous</button>
-            <button class="filter-chip"><i class="fas fa-female"></i> Femmes</button>
-            <button class="filter-chip"><i class="fas fa-male"></i> Hommes</button>
-            <button class="filter-chip"><i class="fas fa-user-circle"></i> Non-binaires</button>
-            <button class="filter-chip"><i class="fas fa-map-pin"></i> < 10 km</button>
-            <button class="filter-chip"><i class="fas fa-magic"></i> Nouveautés</button>
+            <button class="filter-chip active" data-filter="all"><i class="fas fa-utensils"></i> Tous</button>
+            <button class="filter-chip" data-filter="femme"><i class="fas fa-female"></i> Femmes</button>
+            <button class="filter-chip" data-filter="homme"><i class="fas fa-male"></i> Hommes</button>
+            <button class="filter-chip" data-filter="non-binaire"><i class="fas fa-user-circle"></i> Non-binaires</button>
         </div>
 
         <!-- ===== SWIPE CARDS ===== -->
         <div class="swipe-container" id="swipeContainer">
-
             <div class="swipe-card-wrapper" id="swipeWrapper">
-
-                <!-- ===== CARTE 1 ===== -->
-                <div class="swipe-card" data-id="1" style="z-index: 5;">
-                    <div class="swipe-badge like">❤️</div>
-                    <div class="swipe-badge nope">✕</div>
-                    <div class="card-image" style="background: linear-gradient(135deg, #f5ede7, #e8dbd2);">
-                        👩
-                        <span class="online-badge">● En ligne</span>
-                    </div>
-                    <div class="card-body">
-                        <div>
-                            <div class="name-age">
-                                <h3>Sophie</h3>
-                                <span class="age">28 ans</span>
-                            </div>
-                            <div class="location"><i class="fas fa-map-pin"></i> Paris, 5 km</div>
-                            <div class="bio">Artiste peintre, amoureuse des voyages et des bons restaurants.</div>
-                            <div class="tags">
-                                <span>🎨 Art</span>
-                                <span>✈️ Voyage</span>
-                                <span>🍳 Cuisine</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ===== CARTE 2 ===== -->
-                <div class="swipe-card" data-id="2" style="z-index: 4; transform: scale(0.96) translateY(12px); opacity: 0.7;">
-                    <div class="swipe-badge like">❤️</div>
-                    <div class="swipe-badge nope">✕</div>
-                    <div class="card-image" style="background: linear-gradient(135deg, #e8f0ee, #d5e0dc);">
-                        👨
-                        <span class="online-badge offline">● Hors ligne</span>
-                    </div>
-                    <div class="card-body">
-                        <div>
-                            <div class="name-age">
-                                <h3>Lucas</h3>
-                                <span class="age">31 ans</span>
-                            </div>
-                            <div class="location"><i class="fas fa-map-pin"></i> Boulogne, 12 km</div>
-                            <div class="bio">Sportif, musicien amateur et passionné de cuisine italienne.</div>
-                            <div class="tags">
-                                <span>🏃 Sport</span>
-                                <span>🎵 Musique</span>
-                                <span>🍳 Cuisine</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ===== CARTE 3 ===== -->
-                <div class="swipe-card" data-id="3" style="z-index: 3; transform: scale(0.92) translateY(24px); opacity: 0.5;">
-                    <div class="swipe-badge like">❤️</div>
-                    <div class="swipe-badge nope">✕</div>
-                    <div class="card-image" style="background: linear-gradient(135deg, #f0e8f0, #e0d6e0);">
-                        👩
-                        <span class="online-badge">● En ligne</span>
-                    </div>
-                    <div class="card-body">
-                        <div>
-                            <div class="name-age">
-                                <h3>Camille</h3>
-                                <span class="age">26 ans</span>
-                            </div>
-                            <div class="location"><i class="fas fa-map-pin"></i> Vincennes, 8 km</div>
-                            <div class="bio">Photographe, amoureuse de la nature et des animaux.</div>
-                            <div class="tags">
-                                <span>📷 Photo</span>
-                                <span>🌿 Nature</span>
-                                <span>🐾 Animaux</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ===== CARTE 4 ===== -->
-                <div class="swipe-card" data-id="4" style="z-index: 2; transform: scale(0.88) translateY(36px); opacity: 0.3;">
-                    <div class="swipe-badge like">❤️</div>
-                    <div class="swipe-badge nope">✕</div>
-                    <div class="card-image" style="background: linear-gradient(135deg, #f5ede7, #e8dbd2);">
-                        👨
-                        <span class="online-badge">● En ligne</span>
-                    </div>
-                    <div class="card-body">
-                        <div>
-                            <div class="name-age">
-                                <h3>Thomas</h3>
-                                <span class="age">29 ans</span>
-                            </div>
-                            <div class="location"><i class="fas fa-map-pin"></i> Paris, 3 km</div>
-                            <div class="bio">Guitariste, lecteur passionné et amoureux des chats.</div>
-                            <div class="tags">
-                                <span>🎸 Guitare</span>
-                                <span>📖 Lecture</span>
-                                <span>🐾 Animaux</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ===== CARTE 5 ===== -->
-                <div class="swipe-card" data-id="5" style="z-index: 1; transform: scale(0.84) translateY(48px); opacity: 0.15;">
-                    <div class="swipe-badge like">❤️</div>
-                    <div class="swipe-badge nope">✕</div>
-                    <div class="card-image" style="background: linear-gradient(135deg, #e8f0ee, #d5e0dc);">
-                        👩
-                        <span class="online-badge offline">● Hors ligne</span>
-                    </div>
-                    <div class="card-body">
-                        <div>
-                            <div class="name-age">
-                                <h3>Emma</h3>
-                                <span class="age">27 ans</span>
-                            </div>
-                            <div class="location"><i class="fas fa-map-pin"></i> Montreuil, 15 km</div>
-                            <div class="bio">Danseuse, passionnée d'art et de voyages.</div>
-                            <div class="tags">
-                                <span>💃 Danse</span>
-                                <span>🎨 Art</span>
-                                <span>✈️ Voyage</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                <!-- Les cartes seront générées dynamiquement -->
             </div>
         </div>
 
@@ -970,7 +862,7 @@
                 <div class="icon">🌟</div>
                 <h3>Vous avez tout vu !</h3>
                 <p>Vous avez exploré tous les profils correspondant à vos critères.</p>
-                <button class="btn-refresh" onclick="resetCards()">
+                <button class="btn-refresh" onclick="loadProfils()">
                     <i class="fas fa-sync-alt"></i> Recommencer
                 </button>
             </div>
@@ -1005,72 +897,270 @@
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
-        // ===== VARIABLES =====
-        let currentCard = 0;
-        const cards = document.querySelectorAll('.swipe-card');
-        const totalCards = cards.length;
+        // ===== CONFIGURATION =====
+        const API_URL = window.location.origin + '/api';
+        let currentCardIndex = 0;
+        let profils = [];
         let isAnimating = false;
+
+        // ===== AUTHENTIFICATION =====
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_URL}/me`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (!data.success) {
+                    window.location.href = 'CONNEXION.HTML';
+                } else {
+                    // Afficher le nom de l'utilisateur
+                    document.getElementById('userName').textContent = data.user.prenom;
+                    document.getElementById('profileInitial').textContent = data.user.prenom.charAt(0).toUpperCase();
+                    
+                    // Charger les profils
+                    loadProfils();
+                    loadStats();
+                }
+            } catch (error) {
+                console.error('Erreur auth:', error);
+                window.location.href = 'CONNEXION.HTML';
+            }
+        }
+
+        // ===== DÉCONNEXION =====
+        async function logout() {
+            try {
+                await fetch(`${API_URL}/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = 'CONNEXION.HTML';
+            } catch (error) {
+                console.error('Erreur déconnexion:', error);
+                alert('Erreur lors de la déconnexion');
+            }
+        }
+
+        // ===== CHARGER LES STATISTIQUES =====
+        async function loadStats() {
+            try {
+                // Récupérer les matchs
+                const matchResponse = await fetch(`${API_URL}/matchs`, {
+                    credentials: 'include'
+                });
+                const matchData = await matchResponse.json();
+                if (matchData.success) {
+                    const matchCount = matchData.matchs ? matchData.matchs.length : 0;
+                    document.getElementById('matchBadge').textContent = matchCount;
+                }
+
+                // Récupérer les notifications non lues
+                const notifResponse = await fetch(`${API_URL}/notifications`, {
+                    credentials: 'include'
+                });
+                const notifData = await notifResponse.json();
+                if (notifData.success) {
+                    const unreadCount = notifData.notifications ? notifData.notifications.filter(n => !n.lue).length : 0;
+                    document.getElementById('messageBadge').textContent = unreadCount;
+                }
+
+                // Récupérer les likes reçus
+                // Note: Il faudrait une route spécifique pour ça
+                document.getElementById('likesCount').textContent = '💕 Profils à découvrir';
+            } catch (error) {
+                console.error('Erreur chargement stats:', error);
+            }
+        }
+
+        // ===== CHARGER LES PROFILS =====
+        async function loadProfils() {
+            try {
+                const response = await fetch(`${API_URL}/swipe/profils`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success && data.profils && data.profils.length > 0) {
+                    profils = data.profils;
+                    currentCardIndex = 0;
+                    document.getElementById('emptyState').style.display = 'none';
+                    document.getElementById('swipeWrapper').style.display = 'block';
+                    renderCards();
+                } else {
+                    document.getElementById('swipeWrapper').style.display = 'none';
+                    document.getElementById('emptyState').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erreur chargement profils:', error);
+                document.getElementById('swipeWrapper').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+            }
+        }
+
+        // ===== AFFICHER LES CARTES =====
+        function renderCards() {
+            const wrapper = document.getElementById('swipeWrapper');
+            wrapper.innerHTML = '';
+            
+            if (profils.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            // Afficher jusqu'à 5 cartes en pile
+            const displayCount = Math.min(profils.length, 5);
+            
+            for (let i = 0; i < displayCount; i++) {
+                const profil = profils[i];
+                const card = document.createElement('div');
+                card.className = 'swipe-card';
+                card.dataset.id = profil.id;
+                card.style.zIndex = displayCount - i;
+                
+                if (i > 0) {
+                    const scale = 1 - (i * 0.04);
+                    const translateY = i * 12;
+                    const opacity = 1 - (i * 0.12);
+                    card.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+                    card.style.opacity = Math.max(opacity, 0.15);
+                }
+                
+                // Emoji aléatoire pour l'image
+                const emojis = ['👩', '👨', '👩‍🦰', '👨‍🦰', '👩‍🦱', '👨‍🦱', '👩‍🦳', '👨‍🦳'];
+                const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                // Déterminer le statut
+                const isOnline = profil.statut === 'en_ligne';
+                const statusBadge = isOnline ? '● En ligne' : '● Hors ligne';
+                const statusClass = isOnline ? '' : 'offline';
+                
+                card.innerHTML = `
+                    <div class="swipe-badge like">❤️</div>
+                    <div class="swipe-badge nope">✕</div>
+                    <div class="card-image" style="background: linear-gradient(135deg, #f0e8e0, #e6dcd4);">
+                        ${randomEmoji}
+                        <span class="online-badge ${statusClass}">${statusBadge}</span>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <div class="name-age">
+                                <h3>${profil.prenom}</h3>
+                                <span class="age">${profil.age} ans</span>
+                            </div>
+                            <div class="location"><i class="fas fa-map-pin"></i> ${profil.ville || 'France'}</div>
+                            <div class="bio">${profil.bio || 'Une personne formidable à découvrir !'}</div>
+                            <div class="tags">
+                                ${profil.interets ? profil.interets.map(interet => `<span>${interet.icone || '❤️'} ${interet.nom || ''}</span>`).join('') : '<span>❤️ À découvrir</span>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                wrapper.appendChild(card);
+            }
+            
+            // Réinitialiser l'index
+            currentCardIndex = 0;
+            isAnimating = false;
+        }
+
+        // ===== SWIPE CARD =====
+        async function swipeCard(action) {
+            if (isAnimating || currentCardIndex >= profils.length) return;
+            isAnimating = true;
+
+            const wrapper = document.getElementById('swipeWrapper');
+            const cards = wrapper.querySelectorAll('.swipe-card');
+            const currentCard = cards[0];
+            
+            if (!currentCard) {
+                isAnimating = false;
+                return;
+            }
+
+            const profil = profils[currentCardIndex];
+            const badgeLike = currentCard.querySelector('.swipe-badge.like');
+            const badgeNope = currentCard.querySelector('.swipe-badge.nope');
+
+            // Envoyer le like au serveur
+            if (action === 'like' || action === 'super') {
+                try {
+                    const response = await fetch(`${API_URL}/swipe/like`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            user_id: profil.id, 
+                            type: action === 'super' ? 'super_like' : 'like' 
+                        }),
+                        credentials: 'include'
+                    });
+                    const data = await response.json();
+                    
+                    if (data.match) {
+                        setTimeout(() => {
+                            showMatchPopup(profil.prenom);
+                        }, 500);
+                    }
+                } catch (error) {
+                    console.error('Erreur like:', error);
+                }
+            }
+
+            // Animation de la carte
+            if (action === 'like' || action === 'super') {
+                badgeLike.classList.add('show');
+                currentCard.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
+                currentCard.style.transform = 'rotate(12deg) translateX(300px) scale(0.9)';
+                currentCard.style.opacity = '0';
+            } else {
+                badgeNope.classList.add('show');
+                currentCard.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
+                currentCard.style.transform = 'rotate(-12deg) translateX(-300px) scale(0.9)';
+                currentCard.style.opacity = '0';
+            }
+
+            currentCardIndex++;
+
+            setTimeout(() => {
+                // Retirer la carte
+                currentCard.remove();
+                
+                // Mettre à jour les cartes restantes
+                const remainingCards = wrapper.querySelectorAll('.swipe-card');
+                if (remainingCards.length === 0) {
+                    // Charger plus de profils si disponible
+                    if (currentCardIndex < profils.length) {
+                        renderCards();
+                    } else {
+                        document.getElementById('swipeWrapper').style.display = 'none';
+                        document.getElementById('emptyState').style.display = 'block';
+                    }
+                } else {
+                    // Réorganiser les cartes restantes
+                    remainingCards.forEach((card, index) => {
+                        const scale = 1 - (index * 0.04);
+                        const translateY = index * 12;
+                        const opacity = 1 - (index * 0.12);
+                        card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                        card.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+                        card.style.opacity = Math.max(opacity, 0.15);
+                        card.style.zIndex = remainingCards.length - index;
+                    });
+                }
+                
+                isAnimating = false;
+            }, 600);
+        }
 
         // ===== FILTRES =====
         document.querySelectorAll('.filter-chip').forEach(chip => {
             chip.addEventListener('click', function() {
                 document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
+                // Recharger les profils avec le filtre
+                loadProfils();
             });
         });
-
-        // ===== SWIPE CARD =====
-        function swipeCard(action) {
-            if (isAnimating || currentCard >= totalCards) return;
-            isAnimating = true;
-
-            const card = cards[currentCard];
-            const wrapper = document.getElementById('swipeWrapper');
-
-            // Afficher le badge correspondant
-            const badgeLike = card.querySelector('.swipe-badge.like');
-            const badgeNope = card.querySelector('.swipe-badge.nope');
-
-            if (action === 'like' || action === 'super') {
-                badgeLike.classList.add('show');
-                card.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
-                card.style.transform = 'rotate(12deg) translateX(200px) scale(0.9)';
-                card.style.opacity = '0';
-
-                // Vérifier si c'est un match (simulation)
-                if (Math.random() > 0.6) {
-                    const name = card.querySelector('.name-age h3').textContent;
-                    setTimeout(() => {
-                        showMatchPopup(name);
-                    }, 600);
-                }
-
-            } else {
-                badgeNope.classList.add('show');
-                card.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
-                card.style.transform = 'rotate(-12deg) translateX(-200px) scale(0.9)';
-                card.style.opacity = '0';
-            }
-
-            currentCard++;
-
-            setTimeout(() => {
-                // Réinitialiser la carte
-                card.style.transition = 'none';
-                card.style.transform = '';
-                card.style.opacity = '1';
-                badgeLike.classList.remove('show');
-                badgeNope.classList.remove('show');
-
-                // Si on a fini les cartes
-                if (currentCard >= totalCards) {
-                    document.getElementById('swipeWrapper').style.display = 'none';
-                    document.getElementById('emptyState').style.display = 'block';
-                }
-
-                isAnimating = false;
-            }, 600);
-        }
 
         // ===== DRAG & SWIPE (souris) =====
         let isDragging = false;
@@ -1080,211 +1170,133 @@
         let currentY = 0;
         let dragCard = null;
 
-        document.querySelectorAll('.swipe-card').forEach(card => {
-            card.addEventListener('mousedown', function(e) {
-                if (isAnimating || this !== cards[currentCard]) return;
-                isDragging = true;
-                dragCard = this;
-                startX = e.clientX;
-                startY = e.clientY;
-                currentX = 0;
-                currentY = 0;
-                this.style.cursor = 'grabbing';
-                this.style.transition = 'none';
-            });
+        document.addEventListener('mousedown', function(e) {
+            const card = e.target.closest('.swipe-card');
+            if (!card || isAnimating || card !== document.querySelector('.swipe-card')) return;
+            
+            isDragging = true;
+            dragCard = card;
+            startX = e.clientX;
+            startY = e.clientY;
+            currentX = 0;
+            currentY = 0;
+            card.style.cursor = 'grabbing';
+            card.style.transition = 'none';
+        });
 
-            document.addEventListener('mousemove', function(e) {
-                if (!isDragging || !dragCard) return;
-                const deltaX = e.clientX - startX;
-                const deltaY = e.clientY - startY;
-                currentX = deltaX;
-                currentY = deltaY;
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging || !dragCard) return;
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            currentX = deltaX;
+            currentY = deltaY;
 
-                const rotate = deltaX * 0.05;
-                const opacity = 1 - Math.min(Math.abs(deltaX) / 300, 0.5);
+            const rotate = deltaX * 0.05;
+            const opacity = 1 - Math.min(Math.abs(deltaX) / 300, 0.5);
 
-                dragCard.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotate}deg)`;
-                dragCard.style.opacity = opacity;
+            dragCard.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotate}deg)`;
+            dragCard.style.opacity = opacity;
 
-                // Afficher les badges
-                const badgeLike = dragCard.querySelector('.swipe-badge.like');
-                const badgeNope = dragCard.querySelector('.swipe-badge.nope');
-                if (deltaX > 30) {
-                    badgeLike.classList.add('show');
-                    badgeNope.classList.remove('show');
-                } else if (deltaX < -30) {
-                    badgeNope.classList.add('show');
-                    badgeLike.classList.remove('show');
-                } else {
-                    badgeLike.classList.remove('show');
-                    badgeNope.classList.remove('show');
-                }
-            });
+            const badgeLike = dragCard.querySelector('.swipe-badge.like');
+            const badgeNope = dragCard.querySelector('.swipe-badge.nope');
+            if (deltaX > 30) {
+                badgeLike.classList.add('show');
+                badgeNope.classList.remove('show');
+            } else if (deltaX < -30) {
+                badgeNope.classList.add('show');
+                badgeLike.classList.remove('show');
+            } else {
+                badgeLike.classList.remove('show');
+                badgeNope.classList.remove('show');
+            }
+        });
 
-            document.addEventListener('mouseup', function(e) {
-                if (!isDragging || !dragCard) return;
-                isDragging = false;
+        document.addEventListener('mouseup', function(e) {
+            if (!isDragging || !dragCard) return;
+            isDragging = false;
 
-                const deltaX = currentX;
-                const threshold = 80;
+            const deltaX = currentX;
+            const threshold = 80;
 
-                if (Math.abs(deltaX) > threshold) {
-                    // Swipe validé
-                    const action = deltaX > 0 ? 'like' : 'nope';
-                    const badgeLike = dragCard.querySelector('.swipe-badge.like');
-                    const badgeNope = dragCard.querySelector('.swipe-badge.nope');
+            if (Math.abs(deltaX) > threshold) {
+                const action = deltaX > 0 ? 'like' : 'nope';
+                swipeCard(action);
+            } else {
+                dragCard.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+                dragCard.style.transform = '';
+                dragCard.style.opacity = '1';
+                dragCard.style.cursor = 'grab';
+                dragCard.querySelector('.swipe-badge.like').classList.remove('show');
+                dragCard.querySelector('.swipe-badge.nope').classList.remove('show');
+            }
 
-                    if (action === 'like') {
-                        badgeLike.classList.add('show');
-                        dragCard.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
-                        dragCard.style.transform = `translate(300px, ${currentY * 0.3}px) rotate(15deg)`;
-                        dragCard.style.opacity = '0';
-
-                        if (Math.random() > 0.6) {
-                            const name = dragCard.querySelector('.name-age h3').textContent;
-                            setTimeout(() => {
-                                showMatchPopup(name);
-                            }, 600);
-                        }
-                    } else {
-                        badgeNope.classList.add('show');
-                        dragCard.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
-                        dragCard.style.transform = `translate(-300px, ${currentY * 0.3}px) rotate(-15deg)`;
-                        dragCard.style.opacity = '0';
-                    }
-
-                    currentCard++;
-                    setTimeout(() => {
-                        dragCard.style.transition = 'none';
-                        dragCard.style.transform = '';
-                        dragCard.style.opacity = '1';
-                        dragCard.querySelector('.swipe-badge.like').classList.remove('show');
-                        dragCard.querySelector('.swipe-badge.nope').classList.remove('show');
-                        dragCard.style.cursor = 'grab';
-
-                        if (currentCard >= totalCards) {
-                            document.getElementById('swipeWrapper').style.display = 'none';
-                            document.getElementById('emptyState').style.display = 'block';
-                        }
-                        isAnimating = false;
-                    }, 600);
-
-                } else {
-                    // Annuler
-                    dragCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease';
-                    dragCard.style.transform = '';
-                    dragCard.style.opacity = '1';
-                    dragCard.style.cursor = 'grab';
-                    dragCard.querySelector('.swipe-badge.like').classList.remove('show');
-                    dragCard.querySelector('.swipe-badge.nope').classList.remove('show');
-                }
-
-                dragCard = null;
-                isAnimating = false;
-            });
+            dragCard = null;
         });
 
         // ===== TOUCH SUPPORT =====
         let touchStartX = 0;
         let touchStartY = 0;
 
-        document.querySelectorAll('.swipe-card').forEach(card => {
-            card.addEventListener('touchstart', function(e) {
-                if (isAnimating || this !== cards[currentCard]) return;
-                const touch = e.touches[0];
-                touchStartX = touch.clientX;
-                touchStartY = touch.clientY;
-                isDragging = true;
-                dragCard = this;
-                this.style.transition = 'none';
-            });
+        document.addEventListener('touchstart', function(e) {
+            const card = e.target.closest('.swipe-card');
+            if (!card || isAnimating || card !== document.querySelector('.swipe-card')) return;
+            
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            isDragging = true;
+            dragCard = card;
+            card.style.transition = 'none';
+        });
 
-            card.addEventListener('touchmove', function(e) {
-                if (!isDragging || !dragCard) return;
-                e.preventDefault();
-                const touch = e.touches[0];
-                const deltaX = touch.clientX - touchStartX;
-                const deltaY = touch.clientY - touchStartY;
-                currentX = deltaX;
-                currentY = deltaY;
+        document.addEventListener('touchmove', function(e) {
+            if (!isDragging || !dragCard) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - touchStartX;
+            const deltaY = touch.clientY - touchStartY;
+            currentX = deltaX;
+            currentY = deltaY;
 
-                const rotate = deltaX * 0.05;
-                const opacity = 1 - Math.min(Math.abs(deltaX) / 300, 0.5);
+            const rotate = deltaX * 0.05;
+            const opacity = 1 - Math.min(Math.abs(deltaX) / 300, 0.5);
 
-                dragCard.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotate}deg)`;
-                dragCard.style.opacity = opacity;
+            dragCard.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotate}deg)`;
+            dragCard.style.opacity = opacity;
 
-                const badgeLike = dragCard.querySelector('.swipe-badge.like');
-                const badgeNope = dragCard.querySelector('.swipe-badge.nope');
-                if (deltaX > 30) {
-                    badgeLike.classList.add('show');
-                    badgeNope.classList.remove('show');
-                } else if (deltaX < -30) {
-                    badgeNope.classList.add('show');
-                    badgeLike.classList.remove('show');
-                } else {
-                    badgeLike.classList.remove('show');
-                    badgeNope.classList.remove('show');
-                }
-            });
+            const badgeLike = dragCard.querySelector('.swipe-badge.like');
+            const badgeNope = dragCard.querySelector('.swipe-badge.nope');
+            if (deltaX > 30) {
+                badgeLike.classList.add('show');
+                badgeNope.classList.remove('show');
+            } else if (deltaX < -30) {
+                badgeNope.classList.add('show');
+                badgeLike.classList.remove('show');
+            } else {
+                badgeLike.classList.remove('show');
+                badgeNope.classList.remove('show');
+            }
+        });
 
-            card.addEventListener('touchend', function(e) {
-                if (!isDragging || !dragCard) return;
-                isDragging = false;
+        document.addEventListener('touchend', function(e) {
+            if (!isDragging || !dragCard) return;
+            isDragging = false;
 
-                const deltaX = currentX;
-                const threshold = 80;
+            const deltaX = currentX;
+            const threshold = 80;
 
-                if (Math.abs(deltaX) > threshold) {
-                    const action = deltaX > 0 ? 'like' : 'nope';
-                    const badgeLike = dragCard.querySelector('.swipe-badge.like');
-                    const badgeNope = dragCard.querySelector('.swipe-badge.nope');
+            if (Math.abs(deltaX) > threshold) {
+                const action = deltaX > 0 ? 'like' : 'nope';
+                swipeCard(action);
+            } else {
+                dragCard.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+                dragCard.style.transform = '';
+                dragCard.style.opacity = '1';
+                dragCard.querySelector('.swipe-badge.like').classList.remove('show');
+                dragCard.querySelector('.swipe-badge.nope').classList.remove('show');
+            }
 
-                    if (action === 'like') {
-                        badgeLike.classList.add('show');
-                        dragCard.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
-                        dragCard.style.transform = `translate(300px, ${currentY * 0.3}px) rotate(15deg)`;
-                        dragCard.style.opacity = '0';
-
-                        if (Math.random() > 0.6) {
-                            const name = dragCard.querySelector('.name-age h3').textContent;
-                            setTimeout(() => {
-                                showMatchPopup(name);
-                            }, 600);
-                        }
-                    } else {
-                        badgeNope.classList.add('show');
-                        dragCard.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease';
-                        dragCard.style.transform = `translate(-300px, ${currentY * 0.3}px) rotate(-15deg)`;
-                        dragCard.style.opacity = '0';
-                    }
-
-                    currentCard++;
-                    setTimeout(() => {
-                        dragCard.style.transition = 'none';
-                        dragCard.style.transform = '';
-                        dragCard.style.opacity = '1';
-                        dragCard.querySelector('.swipe-badge.like').classList.remove('show');
-                        dragCard.querySelector('.swipe-badge.nope').classList.remove('show');
-
-                        if (currentCard >= totalCards) {
-                            document.getElementById('swipeWrapper').style.display = 'none';
-                            document.getElementById('emptyState').style.display = 'block';
-                        }
-                        isAnimating = false;
-                    }, 600);
-
-                } else {
-                    dragCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease';
-                    dragCard.style.transform = '';
-                    dragCard.style.opacity = '1';
-                    dragCard.querySelector('.swipe-badge.like').classList.remove('show');
-                    dragCard.querySelector('.swipe-badge.nope').classList.remove('show');
-                }
-
-                dragCard = null;
-                isAnimating = false;
-            });
+            dragCard = null;
         });
 
         // ===== MATCH POPUP =====
@@ -1304,47 +1316,6 @@
             window.location.href = 'messages.html';
         }
 
-        // ===== RESET CARDS =====
-        function resetCards() {
-            currentCard = 0;
-            document.getElementById('swipeWrapper').style.display = 'block';
-            document.getElementById('emptyState').style.display = 'none';
-
-            cards.forEach(card => {
-                card.style.transition = 'none';
-                card.style.transform = '';
-                card.style.opacity = '1';
-                card.querySelector('.swipe-badge.like').classList.remove('show');
-                card.querySelector('.swipe-badge.nope').classList.remove('show');
-            });
-
-            // Réinitialiser les positions z-index
-            cards.forEach((card, index) => {
-                const zIndex = totalCards - index;
-                const scale = 1 - (index * 0.04);
-                const translateY = index * 12;
-                const opacity = 1 - (index * 0.12);
-                card.style.zIndex = zIndex;
-                card.style.transform = `scale(${scale}) translateY(${translateY}px)`;
-                card.style.opacity = Math.max(opacity, 0.15);
-            });
-
-            isAnimating = false;
-        }
-
-        // ===== INITIALISATION =====
-        // Positionner les cartes correctement au chargement
-        cards.forEach((card, index) => {
-            if (index > 0) {
-                const scale = 1 - (index * 0.04);
-                const translateY = index * 12;
-                const opacity = 1 - (index * 0.12);
-                card.style.transform = `scale(${scale}) translateY(${translateY}px)`;
-                card.style.opacity = Math.max(opacity, 0.15);
-                card.style.zIndex = totalCards - index;
-            }
-        });
-
         // ===== TOUCHE ÉCHAP POUR POPUP =====
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
@@ -1352,12 +1323,15 @@
             }
         });
 
-        // ===== CLAIR SUR LE OVERLAY POUR FERMER =====
+        // ===== FERMER POPUP EN CLIQUANT SUR LE FOND =====
         document.getElementById('matchPopup').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeMatchPopup();
             }
         });
+
+        // ===== INITIALISATION =====
+        document.addEventListener('DOMContentLoaded', checkAuth);
     </script>
 
 </body>

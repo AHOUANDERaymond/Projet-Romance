@@ -376,6 +376,49 @@
             font-size: 18px;
         }
 
+        /* ===== STATUT DE CHARGEMENT ===== */
+        .btn-login.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-login.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== NOTIFICATION FLASH ===== */
+        .flash-message {
+            padding: 12px 18px;
+            border-radius: 14px;
+            background: #fef3f2;
+            border: 1px solid #fecdca;
+            color: #c0392b;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .flash-message.show {
+            display: flex;
+        }
+
+        .flash-message i {
+            font-size: 18px;
+        }
+
+        .flash-message.success {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+            color: #065f46;
+        }
+
         /* ===== SÉPARATEUR ===== */
         .divider {
             display: flex;
@@ -566,49 +609,6 @@
                 display: none;
             }
         }
-
-        /* ===== STATUT DE CHARGEMENT ===== */
-        .btn-login.loading {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        .btn-login.loading i {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* ===== NOTIFICATION FLASH ===== */
-        .flash-message {
-            padding: 12px 18px;
-            border-radius: 14px;
-            background: #fef3f2;
-            border: 1px solid #fecdca;
-            color: #c0392b;
-            font-size: 14px;
-            margin-bottom: 20px;
-            display: none;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .flash-message.show {
-            display: flex;
-        }
-
-        .flash-message i {
-            font-size: 18px;
-        }
-
-        .flash-message.success {
-            background: #ecfdf5;
-            border-color: #a7f3d0;
-            color: #065f46;
-        }
     </style>
 </head>
 <body>
@@ -617,10 +617,10 @@
 
         <!-- ===== HEADER ===== -->
         <header>
-            <a href="index.html" class="logo">
+            <a href="INDEX.HTML" class="logo">
                 <span>❤️</span> Cœurs Connectés
             </a>
-            <a href="inscription.html" class="header-link">
+            <a href="INSCRIPTION.HTML" class="header-link">
                 <i class="fas fa-user-plus"></i> <span>Pas encore inscrit ?</span> Créer un compte
             </a>
         </header>
@@ -663,7 +663,7 @@
                 </div>
 
                 <!-- ===== FORMULAIRE ===== -->
-                <form id="loginForm" onsubmit="handleLogin(event)">
+                <form id="loginForm">
 
                     <div class="form-group">
                         <label>Email <span class="required">*</span></label>
@@ -686,7 +686,7 @@
                             <input type="checkbox" checked />
                             Se souvenir de moi
                         </label>
-                        <a href="#" class="forgot-link">Mot de passe oublié ?</a>
+                        <a href="#" class="forgot-link" id="forgotLink">Mot de passe oublié ?</a>
                     </div>
 
                     <button type="submit" class="btn-login" id="loginBtn">
@@ -719,7 +719,7 @@
 
                 <!-- ===== LIEN VERS INSCRIPTION ===== -->
                 <div class="signup-link">
-                    Pas encore de compte ? <a href="inscription.html">Créez-le gratuitement 💕</a>
+                    Pas encore de compte ? <a href="INSCRIPTION.HTML">Créez-le gratuitement 💕</a>
                 </div>
 
             </div>
@@ -740,46 +740,60 @@
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
+            const API_URL = window.location.origin + '/api';
         // ===== GESTION DE LA CONNEXION =====
-            function handleLogin(event) {
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
             event.preventDefault();
+            
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
+            const flash = document.getElementById('flashMessage');
+            const flashText = document.getElementById('flashText');
+            const btn = document.getElementById('loginBtn');
             
-            API.login(email, password)
-                .then(result => {
-                    window.location.href = 'dashboard.html';
-                })
-                .catch(error => {
-                    document.getElementById('flashText').textContent = error.message;
-                    document.getElementById('flashMessage').className = 'flash-message show';
-                });
-        }
-
-            // Simulation de chargement
+            if (!email || !password) {
+                flash.className = 'flash-message show';
+                flashText.textContent = 'Veuillez remplir tous les champs.';
+                return;
+            }
+            
             btn.classList.add('loading');
-            btn.innerHTML = '<i class="fas fa-spinner"></i> Connexion en cours...';
-
-            // Cacher le message flash
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion en cours...';
             flash.className = 'flash-message';
-
-            // Simulation d'une requête API
-            setTimeout(() => {
+            
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Sauvegarder les infos utilisateur
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    flash.className = 'flash-message show success';
+                    flashText.textContent = '🎉 Connexion réussie ! Redirection...';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    flash.className = 'flash-message show';
+                    flashText.textContent = '❌ ' + data.message;
+                }
+            } catch (error) {
+                console.error('Erreur détaillée :', error);
+                flash.className = 'flash-message show';
+                flashText.textContent = '❌ Erreur de connexion au serveur. Vérifiez que le backend est lancé sur http://localhost:5000';
+            } finally {
                 btn.classList.remove('loading');
                 btn.innerHTML = '<i class="fas fa-heart"></i> Se connecter';
-
-                // Simulation de succès
-                flash.className = 'flash-message show success';
-                flashText.textContent = '🎉 Connexion réussie ! Redirection en cours...';
-
-                // Redirection vers le dashboard (simulé)
-                setTimeout(() => {
-                    // window.location.href = 'dashboard.html';
-                    alert('✅ Connexion réussie ! Bienvenue dans votre espace 💕');
-                }, 1500);
-
-            }, 1800);
-        }
+            }
+        });
 
         // ===== CONNEXION SOCIALE =====
         function socialLogin(provider) {
@@ -789,20 +803,19 @@
             flash.className = 'flash-message show';
             flashText.textContent = `🔐 Connexion avec ${provider} en cours...`;
 
-            // Simulation
+            // Simulation (à remplacer par de vraies OAuth)
             setTimeout(() => {
                 flash.className = 'flash-message show success';
                 flashText.textContent = `✅ Connexion avec ${provider} réussie !`;
 
                 setTimeout(() => {
-                    // window.location.href = 'dashboard.html';
-                    alert(`✅ Connecté avec ${provider} !`);
+                    window.location.href = 'dashboard.html';
                 }, 1200);
             }, 1000);
         }
 
         // ===== RÉCUPÉRATION DE MOT DE PASSE =====
-        document.querySelector('.forgot-link').addEventListener('click', function(e) {
+        document.getElementById('forgotLink').addEventListener('click', function(e) {
             e.preventDefault();
             const email = document.getElementById('email').value.trim();
 
@@ -811,17 +824,8 @@
                 return;
             }
 
+            // Appel API pour le mot de passe oublié (à implémenter)
             alert(`💌 Un email de réinitialisation a été envoyé à ${email}\n(Vérifiez vos spams si vous ne le voyez pas).`);
-        });
-
-        // ===== TOUCHE ENTRÉE POUR SOUMETTRE =====
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const form = document.getElementById('loginForm');
-                if (document.activeElement && document.activeElement.closest('form')) {
-                    handleLogin(e);
-                }
-            }
         });
 
         // ===== NETTOYER LE MESSAGE FLASH EN SAISISSANT =====
@@ -830,6 +834,25 @@
                 document.getElementById('flashMessage').className = 'flash-message';
             });
         });
+
+        // ===== VÉRIFIER SI DÉJÀ CONNECTÉ =====
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_URL}/me`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (error) {
+                // Non connecté, rester sur la page
+                console.log('Non connecté');
+            }
+        }
+
+        // Vérifier au chargement de la page
+        document.addEventListener('DOMContentLoaded', checkAuth);
     </script>
 
 </body>

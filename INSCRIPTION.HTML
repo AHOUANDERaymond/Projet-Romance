@@ -644,10 +644,10 @@
 
         <!-- ===== HEADER ===== -->
         <header>
-            <a href="index.html" class="logo">
+            <a href="INDEX.HTML" class="logo">
                 <span>❤️</span> Cœurs Connectés
             </a>
-            <a href="connexion.html" class="header-link">
+            <a href="CONNEXION.HTML" class="header-link">
                 <i class="fas fa-sign-in-alt"></i> <span>Déjà inscrit ?</span> Se connecter
             </a>
         </header>
@@ -849,6 +849,8 @@
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
+        // ===== CONFIGURATION =====
+        const API_URL = window.location.origin + '/api';
         // ===== VARIABLES =====
         let currentStep = 0;
         const totalSteps = 4;
@@ -857,12 +859,10 @@
 
         // ===== GESTION DES ÉTAPES =====
         function updateSteps() {
-            // Afficher/masquer les étapes
             formSteps.forEach((step, index) => {
                 step.classList.toggle('active', index === currentStep);
             });
 
-            // Mettre à jour les indicateurs
             indicators.forEach((indicator, index) => {
                 indicator.classList.remove('active', 'completed');
                 if (index === currentStep) {
@@ -872,12 +872,10 @@
                 }
             });
 
-            // Scroll en haut du formulaire
             document.querySelector('.signup-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function nextStep() {
-            // Validation simple
             if (currentStep === 0) {
                 const prenom = document.getElementById('prenom').value.trim();
                 const email = document.getElementById('email').value.trim();
@@ -937,7 +935,6 @@
             }
         });
 
-        // ===== DRAG & DROP SUR LA ZONE PHOTO =====
         const photoUpload = document.getElementById('photoUpload');
 
         photoUpload.addEventListener('dragover', function(e) {
@@ -970,69 +967,66 @@
         });
 
         // ===== SOUMISSION =====
-       async function submitForm() {
-    // Récupérer les données du formulaire
-    const prenom = document.getElementById('prenom').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const age = document.getElementById('age').value;
-    const genre = document.getElementById('genre').value;
-    const ville = document.getElementById('ville').value.trim();
-    const bio = document.getElementById('bio').value.trim();
-    
-    // Récupérer les centres d'intérêt sélectionnés
-    const interets = [];
-    document.querySelectorAll('.tag.selected').forEach(tag => {
-        interets.push(tag.dataset.value);
-    });
-    
-    // Validation
-    if (!prenom || !email || !password || !age || !genre || !ville) {
-        alert('Veuillez remplir tous les champs obligatoires.');
-        return;
-    }
-    
-    if (password.length < 8) {
-        alert('Le mot de passe doit contenir au moins 8 caractères.');
-        return;
-    }
-    
-    const btn = document.querySelector('.btn-submit');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création en cours...';
-    btn.disabled = true;
-    
-    try {
-        const response = await fetch('http://localhost:5000/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                prenom,
-                email,
-                password,
-                genre,
-                age: parseInt(age),
-                ville,
-                bio,
-                interets
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            alert('🎉 Inscription réussie ! Bienvenue sur Cœurs Connectés !');
-            window.location.href = 'dashboard.html';
-        } else {
-            alert('❌ Erreur : ' + data.message);
+        async function submitForm() {
+            const prenom = document.getElementById('prenom').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const age = document.getElementById('age').value;
+            const genre = document.getElementById('genre').value;
+            const ville = document.getElementById('ville').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            
+            const interets = [];
+            document.querySelectorAll('.tag.selected').forEach(tag => {
+                interets.push(tag.dataset.value);
+            });
+            
+            if (!prenom || !email || !password || !age || !genre || !ville) {
+                alert('Veuillez remplir tous les champs obligatoires.');
+                return;
+            }
+            
+            if (password.length < 8) {
+                alert('Le mot de passe doit contenir au moins 8 caractères.');
+                return;
+            }
+            
+            const btn = document.querySelector('.btn-submit');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création en cours...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prenom,
+                        email,
+                        password,
+                        genre,
+                        age: parseInt(age),
+                        ville,
+                        bio,
+                        interets
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('🎉 Inscription réussie ! Bienvenue sur Cœurs Connectés !');
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert('❌ Erreur : ' + data.message);
+                }
+            } catch (error) {
+                console.error('Erreur détaillée :', error);
+                alert('❌ Erreur de connexion au serveur. Vérifiez que le backend est lancé sur http://localhost:5000');
+            } finally {
+                btn.innerHTML = '<i class="fas fa-heart"></i> Créer mon compte';
+                btn.disabled = false;
+            }
         }
-    } catch (error) {
-        alert('❌ Erreur de connexion au serveur. Vérifiez que le backend est lancé.');
-        console.error(error);
-    } finally {
-        btn.innerHTML = '<i class="fas fa-heart"></i> Créer mon compte';
-        btn.disabled = false;
-    }
-}
 
         // ===== INITIALISATION =====
         updateSteps();
