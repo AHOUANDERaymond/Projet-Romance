@@ -139,7 +139,7 @@ class Utilisateur:
                     """, (self.id, target_id))
                     match_id = cursor.lastrowid
                     
-                    # Notifications
+                    # Notifications pour les deux utilisateurs
                     cursor.execute("""
                         INSERT INTO notifications (utilisateur_id, type, contenu) 
                         VALUES (%s, 'match', 'Vous avez un nouveau match !')

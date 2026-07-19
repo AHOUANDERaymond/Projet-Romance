@@ -61,11 +61,6 @@
             50% { transform: scale(1.08); }
         }
 
-        @keyframes shimmer {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-
         .animate {
             animation: fadeInUp 0.8s ease forwards;
         }
@@ -154,6 +149,25 @@
         .nav-profile:hover {
             transform: scale(1.05);
             border-color: #c0392b;
+        }
+
+        /* ===== BOUTON DÉCONNEXION ===== */
+        .btn-logout {
+            padding: 8px 20px;
+            border: 1.5px solid #e74c3c;
+            border-radius: 50px;
+            background: transparent;
+            color: #e74c3c;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-logout:hover {
+            background: #e74c3c;
+            color: #fff;
         }
 
         /* ===== SECTION TITRE ===== */
@@ -486,6 +500,50 @@
             box-shadow: 0 12px 32px rgba(192, 57, 43, 0.3);
         }
 
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e130f;
+            color: #fff;
+            padding: 16px 28px;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 200;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            color: #2ecc71;
+            font-size: 20px;
+        }
+
+        .toast .toast-close {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            font-size: 18px;
+            margin-left: 8px;
+            transition: color 0.3s;
+        }
+
+        .toast .toast-close:hover {
+            color: #fff;
+        }
+
         /* ===== FOOTER ===== */
         footer {
             padding: 24px 0;
@@ -595,50 +653,6 @@
                 font-size: 24px;
             }
         }
-
-        /* ===== NOTIFICATION TOAST ===== */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #1e130f;
-            color: #fff;
-            padding: 16px 28px;
-            border-radius: 16px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 14px;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            z-index: 200;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .toast i {
-            color: #2ecc71;
-            font-size: 20px;
-        }
-
-        .toast .toast-close {
-            background: transparent;
-            border: none;
-            color: rgba(255,255,255,0.4);
-            cursor: pointer;
-            font-size: 18px;
-            margin-left: 8px;
-            transition: color 0.3s;
-        }
-
-        .toast .toast-close:hover {
-            color: #fff;
-        }
     </style>
 </head>
 <body>
@@ -647,15 +661,15 @@
 
         <!-- ===== HEADER ===== -->
         <header>
-            <a href="index.html" class="logo">
+            <a href="INDEX.HTML" class="logo">
                 <span>❤️</span> Cœurs Connectés
             </a>
             <nav>
                 <a href="dashboard.html"><i class="fas fa-compass"></i> <span>Découvrir</span></a>
-                <a href="matchs.html" class="active"><i class="fas fa-heart"></i> <span>Matchs</span> <span class="badge">12</span></a>
-                <a href="messages.html"><i class="fas fa-comment-dots"></i> <span>Messages</span> <span class="badge">4</span></a>
+                <a href="matchs.html" class="active"><i class="fas fa-heart"></i> <span>Matchs</span> <span class="badge" id="matchBadge">0</span></a>
+                <a href="messages.html"><i class="fas fa-comment-dots"></i> <span>Messages</span> <span class="badge" id="messageBadge">0</span></a>
                 <a href="profil.html"><i class="fas fa-user"></i> <span>Profil</span></a>
-                <div class="nav-profile" onclick="window.location.href='profil.html'" title="Mon profil">JD</div>
+                <div class="nav-profile" onclick="window.location.href='profil.html'" title="Mon profil" id="profileInitial">JD</div>
             </nav>
         </header>
 
@@ -663,7 +677,7 @@
         <div class="page-header">
             <div>
                 <h1><i class="fas fa-heart"></i> Mes Matchs</h1>
-                <div class="subtitle">❤️ Des cœurs qui battent à l'unisson</div>
+                <div class="subtitle" id="subtitle">❤️ Chargement des matchs...</div>
             </div>
             <div class="filters">
                 <button class="filter-btn active" data-filter="all"><i class="fas fa-th"></i> <span>Tous</span></button>
@@ -671,6 +685,9 @@
                 <button class="filter-btn" data-filter="online"><i class="fas fa-circle"></i> <span>En ligne</span></button>
                 <button class="filter-btn" data-filter="nearby"><i class="fas fa-map-pin"></i> <span>Près de moi</span></button>
             </div>
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </button>
         </div>
 
         <!-- ===== STATS ===== -->
@@ -678,28 +695,28 @@
             <div class="stat-card">
                 <div class="stat-icon rose"><i class="fas fa-heart"></i></div>
                 <div class="stat-info">
-                    <div class="number">12</div>
+                    <div class="number" id="statMatchs">0</div>
                     <div class="label">Matchs</div>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon blue"><i class="fas fa-comment"></i></div>
                 <div class="stat-info">
-                    <div class="number">8</div>
+                    <div class="number" id="statConversations">0</div>
                     <div class="label">Conversations</div>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon green"><i class="fas fa-circle"></i></div>
                 <div class="stat-info">
-                    <div class="number">5</div>
+                    <div class="number" id="statEnLigne">0</div>
                     <div class="label">En ligne</div>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon gold"><i class="fas fa-star"></i></div>
                 <div class="stat-info">
-                    <div class="number">3</div>
+                    <div class="number" id="statNouveaux">0</div>
                     <div class="label">Nouveaux</div>
                 </div>
             </div>
@@ -707,201 +724,7 @@
 
         <!-- ===== GRILLE DES MATCHS ===== -->
         <div class="match-grid" id="matchGrid">
-
-            <!-- Match 1 - Nouveau -->
-            <div class="match-card" data-status="online" data-date="2026-07-18" data-distance="5">
-                <span class="new-badge">✨ Nouveau match</span>
-                <div class="card-image" style="background: linear-gradient(135deg, #f5ede7, #e8dbd2);">
-                    👩
-                    <span class="online-status"></span>
-                </div>
-                <div class="card-body">
-                    <div class="name-age">
-                        <h3>Sophie</h3>
-                        <span class="age">28 ans</span>
-                    </div>
-                    <div class="location"><i class="fas fa-map-pin"></i> Paris, 5 km</div>
-                    <div class="tags">
-                        <span>🎨 Art</span>
-                        <span>✈️ Voyage</span>
-                        <span>📚 Lecture</span>
-                    </div>
-                    <div class="match-info">
-                        <span class="match-date"><i class="far fa-clock"></i> Match aujourd'hui</span>
-                        <button class="btn-message" onclick="openChat('Sophie')"><i class="fas fa-comment"></i> Discuter</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Match 2 -->
-            <div class="match-card" data-status="online" data-date="2026-07-17" data-distance="12">
-                <div class="card-image" style="background: linear-gradient(135deg, #e8f0ee, #d5e0dc);">
-                    👨
-                    <span class="online-status"></span>
-                </div>
-                <div class="card-body">
-                    <div class="name-age">
-                        <h3>Lucas</h3>
-                        <span class="age">31 ans</span>
-                    </div>
-                    <div class="location"><i class="fas fa-map-pin"></i> Boulogne, 12 km</div>
-                    <div class="tags">
-                        <span>🏃 Sport</span>
-                        <span>🎵 Musique</span>
-                        <span>🍳 Cuisine</span>
-                    </div>
-                    <div class="match-info">
-                        <span class="match-date"><i class="far fa-clock"></i> Match hier</span>
-                        <button class="btn-message" onclick="openChat('Lucas')"><i class="fas fa-comment"></i> Discuter</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Match 3 - Hors ligne -->
-            <div class="match-card" data-status="offline" data-date="2026-07-15" data-distance="8">
-                <div class="card-image" style="background: linear-gradient(135deg, #f0e8f0, #e0d6e0);">
-                    👩
-                    <span class="online-status offline"></span>
-                </div>
-                <div class="card-body">
-                    <div class="name-age">
-                        <h3>Camille</h3>
-                        <span class="age">26 ans</span>
-                    </div>
-                    <div class="location"><i class="fas fa-map-pin"></i> Vincennes, 8 km</div>
-                    <div class="tags">
-                        <span>📷 Photo</span>
-                        <span>🌿 Nature</span>
-                        <span>🎬 Cinéma</span>
-                    </div>
-                    <div class="match-info">
-                        <span class="match-date"><i class="far fa-clock"></i> Match 3 jours</span>
-                        <button class="btn-message" onclick="openChat('Camille')"><i class="fas fa-comment"></i> Discuter</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Match 4 -->
-            <div class="match-card" data-status="online" data-date="2026-07-14" data-distance="3">
-                <div class="card-image" style="background: linear-gradient(135deg, #f5ede7, #e8dbd2);">
-                    👨
-                    <span class="online-status"></span>
-                </div>
-                <div class="card-body">
-                    <div class="name-age">
-                        <h3>Thomas</h3>
-                        <span class="age">29 ans</span>
-                    </div>
-                    <div class="location"><i class="fas fa-map-pin"></i> Paris, 3 km</div>
-                    <div class="tags">
-                        <span>🎸 Guitare</span>
-                        <span>📖 Lecture</span>
-                        <span>🐾 Animaux</span>
-                    </div>
-                    <div class="match-info">
-                        <span class="match-date"><i class="far fa-clock"></i> Match 4 jours</span>
-                        <button class="btn-message" onclick="openChat('Thomas')"><i class="fas fa-comment"></i> Discuter</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Match 5 - Nouveau -->
-            <div class="match-card" data-status="online" data-date="2026-07-18" data-distance="15">
-                <span class="new-badge">✨ Nouveau match</span>
-                <div class="card-image" style="background: linear-gradient(135deg, #e8f0ee, #d5e0dc);">
-                    👩
-                    <span class="online-status"></span>
-                </div>
-                <div class="card-body">
-                    <div class="name-age">
-                        <h3>Emma</h3>
-                        <span class="age">27 ans</span>
-                    </div>
-                    <div class="location"><i class="fas fa-map-pin"></i> Montreuil, 15 km</div>
-                    <div class="tags">
-                        <span>💃 Danse</span>
-                        <span>🎨 Art</span>
-                        <span>✈️ Voyage</span>
-                    </div>
-                    <div class="match-info">
-                        <span class="match-date"><i class="far fa-clock"></i> Match aujourd'hui</span>
-                        <button class="btn-message" onclick="openChat('Emma')"><i class="fas fa-comment"></i> Discuter</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Match 6 -->
-            <div class="match-card" data-status="offline" data-date="2026-07-10" data-distance="22">
-                <div class="card-image" style="background: linear-gradient(135deg, #f0e8f0, #e0d6e0);">
-                    👨
-                    <span class="online-status offline"></span>
-                </div>
-                <div class="card-body">
-                    <div class="name-age">
-                        <h3>Antoine</h3>
-                        <span class="age">34 ans</span>
-                    </div>
-                    <div class="location"><i class="fas fa-map-pin"></i> Saint-Denis, 22 km</div>
-                    <div class="tags">
-                        <span>🏀 Basket</span>
-                        <span>🎬 Cinéma</span>
-                        <span>🍳 Cuisine</span>
-                    </div>
-                    <div class="match-info">
-                        <span class="match-date"><i class="far fa-clock"></i> Match 8 jours</span>
-                        <button class="btn-message" onclick="openChat('Antoine')"><i class="fas fa-comment"></i> Discuter</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Match 7 -->
-            <div class="match-card" data-status="online" data-date="2026-07-12" data-distance="7">
-                <div class="card-image" style="background: linear-gradient(135deg, #f5ede7, #e8dbd2);">
-                    👩
-                    <span class="online-status"></span>
-                </div>
-                <div class="card-body">
-                    <div class="name-age">
-                        <h3>Léa</h3>
-                        <span class="age">30 ans</span>
-                    </div>
-                    <div class="location"><i class="fas fa-map-pin"></i> Vanves, 7 km</div>
-                    <div class="tags">
-                        <span>🧘 Yoga</span>
-                        <span>🌿 Nature</span>
-                        <span>📚 Lecture</span>
-                    </div>
-                    <div class="match-info">
-                        <span class="match-date"><i class="far fa-clock"></i> Match 6 jours</span>
-                        <button class="btn-message" onclick="openChat('Léa')"><i class="fas fa-comment"></i> Discuter</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Match 8 -->
-            <div class="match-card" data-status="offline" data-date="2026-07-08" data-distance="18">
-                <div class="card-image" style="background: linear-gradient(135deg, #e8f0ee, #d5e0dc);">
-                    👨
-                    <span class="online-status offline"></span>
-                </div>
-                <div class="card-body">
-                    <div class="name-age">
-                        <h3>Julien</h3>
-                        <span class="age">32 ans</span>
-                    </div>
-                    <div class="location"><i class="fas fa-map-pin"></i> Neuilly, 18 km</div>
-                    <div class="tags">
-                        <span>🎵 Musique</span>
-                        <span>✈️ Voyage</span>
-                        <span>📷 Photo</span>
-                    </div>
-                    <div class="match-info">
-                        <span class="match-date"><i class="far fa-clock"></i> Match 10 jours</span>
-                        <button class="btn-message" onclick="openChat('Julien')"><i class="fas fa-comment"></i> Discuter</button>
-                    </div>
-                </div>
-            </div>
-
+            <!-- Les matchs seront chargés dynamiquement -->
         </div>
 
         <!-- ===== FOOTER ===== -->
@@ -916,58 +739,241 @@
 
     </div>
 
-    <!-- ===== TOAST NOTIFICATION ===== -->
+    <!-- ===== TOAST ===== -->
     <div class="toast" id="toast">
         <i class="fas fa-heart"></i>
-        <span id="toastMessage">💬 Conversation démarrée avec Sophie</span>
+        <span id="toastMessage">💬 Conversation démarrée</span>
         <button class="toast-close" onclick="closeToast()">✕</button>
     </div>
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
+        // ===== CONFIGURATION =====
+        const API_URL = window.location.origin + '/api';
+        let allMatchs = [];
+        let currentFilter = 'all';
+
+        // ===== AUTHENTIFICATION =====
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_URL}/me`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (!data.success) {
+                    window.location.href = 'CONNEXION.HTML';
+                } else {
+                    document.getElementById('profileInitial').textContent = (data.user.prenom || 'U').charAt(0).toUpperCase();
+                    loadMatchs();
+                    loadStats();
+                }
+            } catch (error) {
+                console.error('Erreur auth:', error);
+                window.location.href = 'CONNEXION.HTML';
+            }
+        }
+
+        // ===== DÉCONNEXION =====
+        async function logout() {
+            try {
+                await fetch(`${API_URL}/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = 'CONNEXION.HTML';
+            } catch (error) {
+                console.error('Erreur déconnexion:', error);
+                alert('Erreur lors de la déconnexion');
+            }
+        }
+
+        // ===== CHARGER LES STATISTIQUES =====
+        async function loadStats() {
+            try {
+                // Matchs
+                const matchResponse = await fetch(`${API_URL}/matchs`, { credentials: 'include' });
+                const matchData = await matchResponse.json();
+                if (matchData.success) {
+                    const matchCount = matchData.matchs ? matchData.matchs.length : 0;
+                    document.getElementById('statMatchs').textContent = matchCount;
+                    document.getElementById('matchBadge').textContent = matchCount;
+                }
+
+                // Messages non lus
+                const notifResponse = await fetch(`${API_URL}/notifications`, { credentials: 'include' });
+                const notifData = await notifResponse.json();
+                if (notifData.success) {
+                    const unreadCount = notifData.notifications ? notifData.notifications.filter(n => !n.lue).length : 0;
+                    document.getElementById('messageBadge').textContent = unreadCount;
+                }
+            } catch (error) {
+                console.error('Erreur chargement stats:', error);
+            }
+        }
+
+        // ===== CHARGER LES MATCHS =====
+        async function loadMatchs() {
+            try {
+                const response = await fetch(`${API_URL}/matchs`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success && data.matchs && data.matchs.length > 0) {
+                    allMatchs = data.matchs;
+                    document.getElementById('subtitle').textContent = `❤️ ${allMatchs.length} cœurs qui battent à l'unisson`;
+                    renderMatchs(allMatchs);
+                    updateStats(allMatchs);
+                } else {
+                    document.getElementById('subtitle').textContent = '💔 Aucun match pour le moment';
+                    document.getElementById('matchGrid').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">💔</div>
+                            <h3>Pas encore de matchs</h3>
+                            <p>Continuez à swiper pour trouver des personnes qui vous correspondent !</p>
+                            <button class="btn-primary" onclick="window.location.href='dashboard.html'">
+                                <i class="fas fa-compass"></i> Découvrir
+                            </button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur chargement matchs:', error);
+            }
+        }
+
+        // ===== METTRE À JOUR LES STATISTIQUES =====
+        function updateStats(matchs) {
+            const onlineCount = matchs.filter(m => m.statut === 'en_ligne').length;
+            const recentCount = matchs.filter(m => {
+                const date = new Date(m.date_match);
+                const now = new Date();
+                const diff = (now - date) / (1000 * 60 * 60 * 24);
+                return diff <= 2;
+            }).length;
+            
+            document.getElementById('statConversations').textContent = matchs.length;
+            document.getElementById('statEnLigne').textContent = onlineCount;
+            document.getElementById('statNouveaux').textContent = recentCount;
+        }
+
+        // ===== AFFICHER LES MATCHS =====
+        function renderMatchs(matchs) {
+            const grid = document.getElementById('matchGrid');
+            grid.innerHTML = '';
+
+            if (matchs.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">💔</div>
+                        <h3>Aucun match trouvé</h3>
+                        <p>Essayez de modifier vos filtres pour voir plus de résultats.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const emojis = ['👩', '👨', '👩‍🦰', '👨‍🦰', '👩‍🦱', '👨‍🦱', '👩‍🦳', '👨‍🦳'];
+            const today = new Date();
+
+            matchs.forEach((match, index) => {
+                const isOnline = match.statut === 'en_ligne';
+                const date = new Date(match.date_match);
+                const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+                
+                let dateText = 'Match aujourd\'hui';
+                if (diffDays === 1) dateText = 'Match hier';
+                else if (diffDays > 1) dateText = `Match il y a ${diffDays} jours`;
+                
+                const isNew = diffDays <= 1;
+                const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+
+                const card = document.createElement('div');
+                card.className = 'match-card';
+                card.dataset.status = match.statut;
+                card.dataset.date = match.date_match;
+                card.dataset.distance = Math.floor(Math.random() * 20) + 1;
+                card.dataset.matchId = match.id;
+                card.dataset.autreId = match.autre_id;
+                card.dataset.prenom = match.prenom;
+                card.style.animationDelay = `${(index % 8) * 0.05}s`;
+
+                card.innerHTML = `
+                    ${isNew ? '<span class="new-badge">✨ Nouveau match</span>' : ''}
+                    <div class="card-image" style="background: linear-gradient(135deg, #f0e8e0, #e6dcd4);">
+                        ${emoji}
+                        <span class="online-status ${isOnline ? '' : 'offline'}"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="name-age">
+                            <h3>${match.prenom}</h3>
+                            <span class="age">${match.age || '?'} ans</span>
+                        </div>
+                        <div class="location"><i class="fas fa-map-pin"></i> ${match.ville || 'France'}, ${Math.floor(Math.random() * 20) + 1} km</div>
+                        <div class="tags">
+                            <span>❤️ Matché</span>
+                            <span>💬 En attente</span>
+                        </div>
+                        <div class="match-info">
+                            <span class="match-date"><i class="far fa-clock"></i> ${dateText}</span>
+                            <button class="btn-message" onclick="event.stopPropagation(); openChat('${match.prenom}', ${match.id}, ${match.autre_id})">
+                                <i class="fas fa-comment"></i> Discuter
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Ouvrir la conversation au clic sur la carte
+                card.addEventListener('click', function() {
+                    openChat(match.prenom, match.id, match.autre_id);
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
         // ===== FILTRES =====
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                // Mettre à jour l'état actif
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-
-                const filter = this.dataset.filter;
-                const cards = document.querySelectorAll('.match-card');
-
-                cards.forEach(card => {
-                    card.style.display = '';
-
-                    if (filter === 'all') return;
-
-                    if (filter === 'recent') {
-                        // Vérifier si la date est dans les 2 derniers jours
-                        const dateText = card.querySelector('.match-date').textContent;
-                        const isRecent = dateText.includes("aujourd'hui") || dateText.includes('hier');
-                        card.style.display = isRecent ? '' : 'none';
-                    }
-
-                    if (filter === 'online') {
-                        const isOnline = card.dataset.status === 'online';
-                        card.style.display = isOnline ? '' : 'none';
-                    }
-
-                    if (filter === 'nearby') {
-                        const distance = parseInt(card.dataset.distance);
-                        card.style.display = distance <= 10 ? '' : 'none';
-                    }
-                });
+                currentFilter = this.dataset.filter;
+                applyFilter();
             });
         });
 
+        function applyFilter() {
+            let filtered = allMatchs;
+
+            if (currentFilter === 'recent') {
+                const now = new Date();
+                filtered = allMatchs.filter(m => {
+                    const date = new Date(m.date_match);
+                    const diff = (now - date) / (1000 * 60 * 60 * 24);
+                    return diff <= 2;
+                });
+            } else if (currentFilter === 'online') {
+                filtered = allMatchs.filter(m => m.statut === 'en_ligne');
+            } else if (currentFilter === 'nearby') {
+                // Simulation de proximité - on garde aléatoirement certains matchs
+                filtered = allMatchs.filter(() => Math.random() > 0.4);
+            }
+
+            renderMatchs(filtered);
+        }
+
         // ===== OUVRIR UN CHAT =====
-        function openChat(name) {
+        function openChat(name, matchId, autreId) {
             const toast = document.getElementById('toast');
             const message = document.getElementById('toastMessage');
             message.textContent = `💬 Conversation démarrée avec ${name}`;
             toast.classList.add('show');
 
-            // Fermer automatiquement après 4 secondes
+            // Rediriger vers la page des messages avec le match sélectionné
+            setTimeout(() => {
+                window.location.href = `messages.html?match=${matchId}`;
+            }, 1500);
+
             clearTimeout(window.toastTimeout);
             window.toastTimeout = setTimeout(() => {
                 toast.classList.remove('show');
@@ -979,23 +985,15 @@
             clearTimeout(window.toastTimeout);
         }
 
-        // ===== CLIC SUR UNE CARTE =====
-        document.querySelectorAll('.match-card').forEach(card => {
-            card.addEventListener('click', function(e) {
-                // Ne pas déclencher si on clique sur le bouton "Discuter"
-                if (e.target.closest('.btn-message')) return;
-
-                const name = this.querySelector('.name-age h3').textContent;
-                openChat(name);
-            });
-        });
-
-        // ===== TOUCHE ÉCHAP POUR FERMER LE TOAST =====
+        // ===== TOUCHE ÉCHAP =====
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeToast();
             }
         });
+
+        // ===== INITIALISATION =====
+        document.addEventListener('DOMContentLoaded', checkAuth);
     </script>
 
 </body>

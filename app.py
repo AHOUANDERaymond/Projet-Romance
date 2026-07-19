@@ -245,6 +245,10 @@ def create_like():
     
     try:
         result = user.create_like(target_id, type_like)
+        
+        # Si c'est un match, les notifications sont déjà créées dans models.py
+        # Mais on peut ajouter une notification supplémentaire si besoin
+        
         return jsonify({
             'success': True,
             'match': result.get('match', False),
@@ -343,9 +347,26 @@ def upload_photo():
     if photo.filename == '':
         return jsonify({'success': False, 'message': 'Fichier vide'}), 400
     
+    # Créer le dossier uploads s'il n'existe pas
+    upload_dir = os.path.join(os.path.dirname(__file__), 'uploads')
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    # Sauvegarder la photo
+    filename = f"user_{user.id}_{int(datetime.now().timestamp())}.jpg"
+    filepath = os.path.join(upload_dir, filename)
+    photo.save(filepath)
+    
+    # Mettre à jour la photo de profil dans la base de données
+    with db.get_cursor() as cursor:
+        cursor.execute(
+            "UPDATE utilisateurs SET photo_profil = %s WHERE id = %s",
+            (f'/uploads/{filename}', user.id)
+        )
+    
     return jsonify({
         'success': True,
-        'message': 'Photo uploadée avec succès'
+        'message': 'Photo uploadée avec succès',
+        'photo_path': f'/uploads/{filename}'
     })
 
 # ============================================
@@ -373,6 +394,24 @@ def search_users():
     return jsonify({
         'success': True,
         'results': results
+    })
+
+# ============================================
+# ROUTES - NOTIFICATIONS EN TEMPS RÉEL (WebSocket)
+# ============================================
+# Note: Pour une vraie version en temps réel, il faudrait utiliser
+# Flask-SocketIO. Pour l'instant, on utilise le polling.
+
+@app.route('/api/notifications/unread', methods=['GET'])
+@require_auth
+def get_unread_notifications():
+    user = get_current_user()
+    notifications = user.get_notifications()
+    unread = [n for n in notifications if not n.get('lue', False)]
+    return jsonify({
+        'success': True,
+        'count': len(unread),
+        'notifications': unread[:10]  # Limiter à 10 pour l'affichage
     })
 
 # ============================================
