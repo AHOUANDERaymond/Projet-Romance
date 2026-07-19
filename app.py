@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, send_from_directory, redirect
 from flask_cors import CORS
 from flask_session import Session
 from config import Config
@@ -7,6 +7,7 @@ from database import db
 import logging
 import os
 from datetime import timedelta
+from functools import wraps
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)
@@ -23,19 +24,38 @@ Session(app)
 # CORS
 CORS(app, origins=Config.CORS_ORIGINS, supports_credentials=True)
 
-# Initialisation des données de base
+# ============================================
+# ROUTES - FICHIERS STATIQUES (HTML)
+# ============================================
+
+@app.route('/')
+def index():
+    """Rediriger vers la page d'accueil"""
+    return redirect('/INDEX.HTML')
+
+@app.route('/<path:filename>')
+def serve_static(filename):
+    """Servir les fichiers HTML statiques"""
+    if os.path.exists(filename):
+        return send_from_directory('.', filename)
+    return jsonify({'error': 'Fichier non trouvé'}), 404
+
+# ============================================
+# INITIALISATION DE LA BASE DE DONNÉES
+# ============================================
+
 with app.app_context():
     try:
         init_interets()
-        logger.info("Base de données initialisée")
+        logger.info("Base de données initialisée avec succès")
     except Exception as e:
         logger.error(f"Erreur d'initialisation: {e}")
 
 # ============================================
 # MIDDLEWARE - Authentification
 # ============================================
+
 def require_auth(f):
-    from functools import wraps
     @wraps(f)
     def decorated(*args, **kwargs):
         if 'user_id' not in session:
@@ -56,13 +76,12 @@ def get_current_user():
 def register():
     data = request.get_json()
     
-    # Validation
     required = ['prenom', 'email', 'password', 'genre', 'age', 'ville']
     for field in required:
         if not data.get(field):
             return jsonify({'success': False, 'message': f'Le champ {field} est requis'}), 400
     
-    if not '@' in data['email']:
+    if '@' not in data['email']:
         return jsonify({'success': False, 'message': 'Email invalide'}), 400
     
     if data['age'] < 18 or data['age'] > 99:
@@ -71,7 +90,6 @@ def register():
     if len(data['password']) < 8:
         return jsonify({'success': False, 'message': 'Le mot de passe doit contenir au moins 8 caractères'}), 400
     
-    # Vérifier si l'email existe déjà
     existing = Utilisateur.get_by_email(data['email'])
     if existing:
         return jsonify({'success': False, 'message': 'Cet email est déjà utilisé'}), 400
@@ -88,12 +106,10 @@ def register():
             data.get('bio')
         )
         
-        # Ajouter les centres d'intérêt
         if data.get('interets'):
             user = Utilisateur(user_id)
             user.update_interets(data['interets'])
         
-        # Connecter automatiquement
         session['user_id'] = user_id
         
         return jsonify({
@@ -326,10 +342,6 @@ def upload_photo():
     photo = request.files['photo']
     if photo.filename == '':
         return jsonify({'success': False, 'message': 'Fichier vide'}), 400
-    
-    # Sauvegarder la photo (à implémenter selon votre besoin)
-    # filename = f"user_{user.id}_{int(time.time())}.jpg"
-    # photo.save(os.path.join('uploads', filename))
     
     return jsonify({
         'success': True,

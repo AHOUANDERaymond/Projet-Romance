@@ -741,27 +741,20 @@
     <!-- ===== JAVASCRIPT ===== -->
     <script>
         // ===== GESTION DE LA CONNEXION =====
-        function handleLogin(event) {
+            function handleLogin(event) {
             event.preventDefault();
-
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
-            const flash = document.getElementById('flashMessage');
-            const flashText = document.getElementById('flashText');
-            const btn = document.getElementById('loginBtn');
-
-            // Validation simple
-            if (!email || !password) {
-                flash.className = 'flash-message show';
-                flashText.textContent = 'Veuillez remplir tous les champs.';
-                return;
-            }
-
-            if (!email.includes('@') || !email.includes('.')) {
-                flash.className = 'flash-message show';
-                flashText.textContent = 'Veuillez entrer une adresse email valide.';
-                return;
-            }
+            
+            API.login(email, password)
+                .then(result => {
+                    window.location.href = 'dashboard.html';
+                })
+                .catch(error => {
+                    document.getElementById('flashText').textContent = error.message;
+                    document.getElementById('flashMessage').className = 'flash-message show';
+                });
+        }
 
             // Simulation de chargement
             btn.classList.add('loading');
