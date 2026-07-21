@@ -414,6 +414,29 @@ def get_unread_notifications():
         'notifications': unread[:10]  # Limiter à 10 pour l'affichage
     })
 
+
+
+
+
+
+@app.route('/api/utilisateurs', methods=['GET'])
+@require_auth
+def get_all_users():
+    """Récupérer tous les utilisateurs (admin)"""
+    user = get_current_user()
+    with db.get_cursor() as cursor:
+        cursor.execute("""
+            SELECT id, prenom, age, ville, statut, photo_profil
+            FROM utilisateurs
+            WHERE id != %s AND compte_actif = 1
+            ORDER BY id DESC
+            LIMIT 50
+        """, (user.id,))
+        users = cursor.fetchall()
+    return jsonify({
+        'success': True,
+        'users': users
+    })
 # ============================================
 # START
 # ============================================

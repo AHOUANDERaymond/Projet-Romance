@@ -206,18 +206,15 @@ class Utilisateur:
         with db.get_cursor() as cursor:
             cursor.execute("""
                 SELECT u.*, 
-                    (SELECT COUNT(*) FROM likes WHERE likeur_id = %s AND like_id = u.id) as deja_swipe
+                    (SELECT COUNT(*) FROM likes WHERE likeur_id = %s AND like_id = u.id) as deja_like,
+                    (SELECT COUNT(*) FROM likes WHERE likeur_id = u.id AND like_id = %s) as a_aime
                 FROM utilisateurs u
                 WHERE u.id != %s
                   AND u.compte_actif = 1
                   AND u.age BETWEEN %s AND %s
-                  AND u.id NOT IN (
-                      SELECT like_id FROM likes WHERE likeur_id = %s
-                  )
-                  AND u.statut = 'en_ligne'
                 ORDER BY RAND()
                 LIMIT %s
-            """, (self.id, self.id, age_min, age_max, self.id, limit))
+            """, (self.id, self.id, self.id, age_min, age_max, limit))
             return cursor.fetchall()
     
     def logout(self):

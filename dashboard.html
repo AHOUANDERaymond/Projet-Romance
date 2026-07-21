@@ -381,6 +381,30 @@
             box-shadow: none;
         }
 
+        .swipe-card .card-image .liked-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: #27ae60;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .swipe-card .card-image .already-liked {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: #b0a49e;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
         .swipe-card .card-body {
             padding: 20px 24px 16px;
             height: 40%;
@@ -817,7 +841,7 @@
         <div class="dashboard-hero">
             <div>
                 <div class="greeting">
-                    Bonjour, <span id="userName">Julien</span> <i class="fas fa-heart" style="font-size: 24px;"></i>
+                    Bonjour, <span id="userName">Chargement...</span> <i class="fas fa-heart" style="font-size: 24px;"></i>
                 </div>
                 <div class="sub-greeting" id="likesCount">💕 Chargement...</div>
             </div>
@@ -902,6 +926,7 @@
         let currentCardIndex = 0;
         let profils = [];
         let isAnimating = false;
+        let currentUser = null;
 
         // ===== AUTHENTIFICATION =====
         async function checkAuth() {
@@ -913,13 +938,13 @@
                 if (!data.success) {
                     window.location.href = 'CONNEXION.HTML';
                 } else {
-                    // Afficher le nom de l'utilisateur
+                    currentUser = data.user;
                     document.getElementById('userName').textContent = data.user.prenom;
                     document.getElementById('profileInitial').textContent = data.user.prenom.charAt(0).toUpperCase();
                     
-                    // Charger les profils
                     loadProfils();
                     loadStats();
+                    loadNotifications();
                 }
             } catch (error) {
                 console.error('Erreur auth:', error);
@@ -944,7 +969,6 @@
         // ===== CHARGER LES STATISTIQUES =====
         async function loadStats() {
             try {
-                // Récupérer les matchs
                 const matchResponse = await fetch(`${API_URL}/matchs`, {
                     credentials: 'include'
                 });
@@ -954,7 +978,6 @@
                     document.getElementById('matchBadge').textContent = matchCount;
                 }
 
-                // Récupérer les notifications non lues
                 const notifResponse = await fetch(`${API_URL}/notifications`, {
                     credentials: 'include'
                 });
@@ -965,10 +988,31 @@
                 }
 
                 // Récupérer les likes reçus
-                // Note: Il faudrait une route spécifique pour ça
-                document.getElementById('likesCount').textContent = '💕 Profils à découvrir';
+                const likesResponse = await fetch(`${API_URL}/swipe/profils`, {
+                    credentials: 'include'
+                });
+                const likesData = await likesResponse.json();
+                if (likesData.success && likesData.profils) {
+                    const totalLikes = likesData.profils.reduce((sum, p) => sum + (p.a_aime || 0), 0);
+                    document.getElementById('likesCount').textContent = `💕 ${totalLikes} personnes vous ont liké`;
+                }
             } catch (error) {
                 console.error('Erreur chargement stats:', error);
+            }
+        }
+
+        // ===== CHARGER LES NOTIFICATIONS =====
+        async function loadNotifications() {
+            try {
+                const response = await fetch(`${API_URL}/notifications/unread`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    console.log('Notifications non lues:', data.count);
+                }
+            } catch (error) {
+                console.error('Erreur notifications:', error);
             }
         }
 
@@ -1007,7 +1051,6 @@
                 return;
             }
 
-            // Afficher jusqu'à 5 cartes en pile
             const displayCount = Math.min(profils.length, 5);
             
             for (let i = 0; i < displayCount; i++) {
@@ -1025,14 +1068,15 @@
                     card.style.opacity = Math.max(opacity, 0.15);
                 }
                 
-                // Emoji aléatoire pour l'image
                 const emojis = ['👩', '👨', '👩‍🦰', '👨‍🦰', '👩‍🦱', '👨‍🦱', '👩‍🦳', '👨‍🦳'];
                 const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
                 
-                // Déterminer le statut
                 const isOnline = profil.statut === 'en_ligne';
                 const statusBadge = isOnline ? '● En ligne' : '● Hors ligne';
                 const statusClass = isOnline ? '' : 'offline';
+                
+                const dejaLike = (profil.deja_like || 0) > 0;
+                const aAime = (profil.a_aime || 0) > 0;
                 
                 card.innerHTML = `
                     <div class="swipe-badge like">❤️</div>
@@ -1040,12 +1084,14 @@
                     <div class="card-image" style="background: linear-gradient(135deg, #f0e8e0, #e6dcd4);">
                         ${randomEmoji}
                         <span class="online-badge ${statusClass}">${statusBadge}</span>
+                        ${aAime ? '<span class="liked-badge">❤️ Vous a liké</span>' : ''}
+                        ${dejaLike ? '<span class="already-liked">Déjà liké</span>' : ''}
                     </div>
                     <div class="card-body">
                         <div>
                             <div class="name-age">
                                 <h3>${profil.prenom}</h3>
-                                <span class="age">${profil.age} ans</span>
+                                <span class="age">${profil.age || '?'} ans</span>
                             </div>
                             <div class="location"><i class="fas fa-map-pin"></i> ${profil.ville || 'France'}</div>
                             <div class="bio">${profil.bio || 'Une personne formidable à découvrir !'}</div>
@@ -1059,7 +1105,6 @@
                 wrapper.appendChild(card);
             }
             
-            // Réinitialiser l'index
             currentCardIndex = 0;
             isAnimating = false;
         }
@@ -1082,7 +1127,6 @@
             const badgeLike = currentCard.querySelector('.swipe-badge.like');
             const badgeNope = currentCard.querySelector('.swipe-badge.nope');
 
-            // Envoyer le like au serveur
             if (action === 'like' || action === 'super') {
                 try {
                     const response = await fetch(`${API_URL}/swipe/like`, {
@@ -1122,13 +1166,10 @@
             currentCardIndex++;
 
             setTimeout(() => {
-                // Retirer la carte
                 currentCard.remove();
                 
-                // Mettre à jour les cartes restantes
                 const remainingCards = wrapper.querySelectorAll('.swipe-card');
                 if (remainingCards.length === 0) {
-                    // Charger plus de profils si disponible
                     if (currentCardIndex < profils.length) {
                         renderCards();
                     } else {
@@ -1136,7 +1177,6 @@
                         document.getElementById('emptyState').style.display = 'block';
                     }
                 } else {
-                    // Réorganiser les cartes restantes
                     remainingCards.forEach((card, index) => {
                         const scale = 1 - (index * 0.04);
                         const translateY = index * 12;
@@ -1157,7 +1197,6 @@
             chip.addEventListener('click', function() {
                 document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
-                // Recharger les profils avec le filtre
                 loadProfils();
             });
         });
@@ -1332,6 +1371,14 @@
 
         // ===== INITIALISATION =====
         document.addEventListener('DOMContentLoaded', checkAuth);
+
+        // Rafraîchir les notifications toutes les 30 secondes
+        setInterval(() => {
+            if (currentUser) {
+                loadNotifications();
+                loadStats();
+            }
+        }, 30000);
     </script>
 
 </body>
