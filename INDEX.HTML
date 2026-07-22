@@ -4,10 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cœurs Connectés - Rencontres Amoureuses</title>
-    
-    <!-- Google Fonts pour une typographie élégante -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-    
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
         /* ===== RESET & BASE ===== */
         * {
@@ -18,9 +21,8 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: #faf6f2;
+            background: #fcf8f5;
             color: #2d1e1a;
-            line-height: 1.6;
             overflow-x: hidden;
         }
 
@@ -30,24 +32,30 @@
             padding: 0 40px;
         }
 
-        /* ===== ANIMATIONS GLOBALES ===== */
+        /* ===== ANIMATIONS ===== */
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(40px); }
+            from { opacity: 0; transform: translateY(50px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes floatHeart {
+            0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+            50% { transform: translateY(-20px) scale(1.1) rotate(5deg); }
+        }
+
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
         }
 
-        @keyframes pulse-heart {
+        @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-        }
-
-        .animate {
-            animation: fadeInUp 0.8s ease forwards;
+            50% { transform: scale(1.05); }
         }
 
         /* ===== HEADER ===== */
@@ -55,33 +63,41 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 24px 0;
+            padding: 18px 40px;
             border-bottom: 1px solid rgba(44, 30, 26, 0.06);
-            backdrop-filter: blur(12px);
-            background: rgba(250, 246, 242, 0.7);
-            position: sticky;
+            background: rgba(252, 248, 245, 0.85);
+            backdrop-filter: blur(16px);
+            position: fixed;
             top: 0;
-            z-index: 100;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: box-shadow 0.3s;
+        }
+
+        header.scrolled {
+            box-shadow: 0 4px 30px rgba(44, 30, 26, 0.06);
         }
 
         .logo {
             font-family: 'Playfair Display', serif;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: #c0392b;
-            letter-spacing: -0.5px;
+            text-decoration: none;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .logo span {
-            font-size: 32px;
+            font-size: 30px;
+            animation: floatHeart 3s ease-in-out infinite;
         }
 
         nav {
             display: flex;
-            gap: 32px;
+            gap: 28px;
             align-items: center;
         }
 
@@ -89,8 +105,24 @@
             text-decoration: none;
             color: #2d1e1a;
             font-weight: 450;
-            font-size: 15px;
+            font-size: 14px;
             transition: color 0.3s;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #c0392b;
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after {
+            width: 100%;
         }
 
         nav a:hover {
@@ -99,7 +131,7 @@
 
         .btn-outline {
             padding: 10px 28px;
-            border: 1.5px solid #c0392b;
+            border: 2px solid #c0392b;
             border-radius: 50px;
             background: transparent;
             color: #c0392b;
@@ -107,11 +139,14 @@
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
         }
 
         .btn-outline:hover {
             background: #c0392b;
             color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(192, 57, 43, 0.2);
         }
 
         .btn-primary {
@@ -123,60 +158,79 @@
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.3s;
             box-shadow: 0 8px 24px rgba(192, 57, 43, 0.25);
+            font-family: 'Inter', sans-serif;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(192, 57, 43, 0.35);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 36px rgba(192, 57, 43, 0.35);
         }
 
-        /* ===== SECTION HERO ===== */
-        .hero {
+        /* ===== SECTION HERO AVEC CARROUSEL ===== */
+        .hero-section {
+            padding-top: 100px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 60px;
-            padding: 60px 0 80px;
             align-items: center;
+            width: 100%;
+            position: relative;
+            z-index: 1;
         }
 
+        /* ===== CONTENU GAUCHE ===== */
         .hero-content {
             animation: fadeInUp 1s ease;
         }
 
         .hero-content .badge {
             display: inline-block;
-            background: rgba(192, 57, 43, 0.10);
+            background: rgba(192, 57, 43, 0.08);
             color: #c0392b;
-            padding: 6px 18px;
+            padding: 6px 20px;
             border-radius: 50px;
             font-size: 13px;
             font-weight: 500;
-            margin-bottom: 20px;
-            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(192, 57, 43, 0.10);
         }
 
         .hero-content h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 56px;
-            font-weight: 700;
-            line-height: 1.15;
-            margin-bottom: 20px;
+            font-size: 58px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
             color: #1e130f;
+            background: linear-gradient(135deg, #1e130f 40%, #c0392b 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .hero-content h1 i {
+        .hero-content h1 .highlight {
             color: #c0392b;
-            font-style: italic;
+            -webkit-text-fill-color: #c0392b;
+            position: relative;
         }
 
-        .hero-content p {
+        .hero-content .subtitle {
             font-size: 18px;
             color: #5a4a44;
             max-width: 460px;
-            margin-bottom: 36px;
+            margin-bottom: 32px;
             font-weight: 350;
+            line-height: 1.7;
         }
 
         .hero-buttons {
@@ -186,23 +240,24 @@
         }
 
         .hero-buttons .btn-primary {
-            padding: 14px 44px;
+            padding: 16px 44px;
             font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .hero-buttons .btn-outline {
-            padding: 14px 38px;
+            padding: 16px 38px;
             font-size: 16px;
         }
 
         .hero-stats {
             display: flex;
             gap: 48px;
-            margin-top: 48px;
-        }
-
-        .hero-stats div {
-            text-align: left;
+            margin-top: 44px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(44, 30, 26, 0.06);
         }
 
         .hero-stats .number {
@@ -217,93 +272,173 @@
             color: #7a6a64;
         }
 
-        /* ===== HERO IMAGE ===== */
-        .hero-visual {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* ===== CARROUSEL D'IMAGES - CORRIGÉ ===== */
+        .hero-carousel {
             position: relative;
-        }
-
-        .hero-image-frame {
-            width: 100%;
-            max-width: 520px;
             border-radius: 32px;
-            background: linear-gradient(145deg, #f0e8e0, #e6dcd4);
-            padding: 16px;
-            box-shadow: 0 30px 60px rgba(44, 30, 26, 0.12);
-            position: relative;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(44, 30, 26, 0.15);
+            aspect-ratio: 4/3;
+            animation: fadeInScale 1s ease;
+            background: #f0e8e0;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .hero-image-frame img {
-            width: 100%;
-            height: auto;
-            border-radius: 24px;
-            display: block;
-            background: #d5c8be;
-            aspect-ratio: 4/3;
-            object-fit: cover;
-        }
-
-        /* Placeholder élégant en attendant une vraie image */
-        .hero-image-placeholder {
-            width: 100%;
-            aspect-ratio: 4/3;
-            border-radius: 24px;
-            background: linear-gradient(135deg, #f5ede7, #e8dbd2);
+        .carousel-slides {
             display: flex;
-            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            will-change: transform;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .carousel-slide .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 40px 30px 30px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.5));
+            color: #fff;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .carousel-slide .slide-overlay .slide-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 700;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+
+        .carousel-slide .slide-overlay .slide-desc {
+            font-size: 15px;
+            opacity: 0.9;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+        }
+
+        /* ===== INDICATEURS ===== */
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .carousel-indicators .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            cursor: pointer;
+            transition: all 0.4s;
+            border: 2px solid transparent;
+        }
+
+        .carousel-indicators .dot.active {
+            background: #fff;
+            transform: scale(1.2);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .carousel-indicators .dot:hover {
+            background: rgba(255,255,255,0.7);
+        }
+
+        /* ===== FLÈCHES ===== */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+            display: flex;
             align-items: center;
             justify-content: center;
-            color: #a0847a;
-            font-family: 'Playfair Display', serif;
-            font-size: 22px;
-            gap: 8px;
         }
 
-        .hero-image-placeholder span {
-            font-size: 64px;
+        .carousel-btn:hover {
+            background: rgba(255,255,255,0.4);
+            transform: translateY(-50%) scale(1.05);
         }
 
-        /* Carte flottante "match" */
+        .carousel-btn.prev { left: 16px; }
+        .carousel-btn.next { right: 16px; }
+
+        /* ===== CARTES FLOTTANTES ===== */
         .floating-card {
             position: absolute;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255,255,255,0.92);
             backdrop-filter: blur(12px);
-            padding: 14px 22px;
+            padding: 12px 20px;
             border-radius: 60px;
-            box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+            box-shadow: 0 12px 32px rgba(44, 30, 26, 0.08);
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 14px;
+            gap: 10px;
+            font-size: 13px;
             font-weight: 500;
-            animation: float 3s ease-in-out infinite;
+            animation: float 3.5s ease-in-out infinite;
+            z-index: 5;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
-        .floating-card:nth-child(2) {
-            top: 8%;
-            right: -5%;
-            animation-delay: 0.4s;
+        .floating-card .heart-icon {
+            color: #c0392b;
+            font-size: 18px;
+            animation: pulse 1.8s ease-in-out infinite;
         }
 
-        .floating-card:nth-child(3) {
+        .floating-card-1 {
+            top: 5%;
+            right: 4%;
+            animation-delay: 0.2s;
+        }
+
+        .floating-card-2 {
             bottom: 12%;
             left: -8%;
-            animation-delay: 0.8s;
-        }
-
-        .floating-card .heart {
-            color: #c0392b;
-            font-size: 20px;
-            animation: pulse-heart 1.8s ease-in-out infinite;
+            animation-delay: 0.6s;
         }
 
         /* ===== SECTION "COMMENT ÇA MARCHE" ===== */
         .section-title {
             text-align: center;
             font-family: 'Playfair Display', serif;
-            font-size: 40px;
+            font-size: 42px;
             font-weight: 700;
             color: #1e130f;
             margin-bottom: 12px;
@@ -314,12 +449,15 @@
             color: #7a6a64;
             font-size: 17px;
             margin-bottom: 56px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .steps {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
+            gap: 32px;
             padding-bottom: 80px;
         }
 
@@ -329,28 +467,27 @@
             padding: 40px 32px;
             text-align: center;
             box-shadow: 0 8px 32px rgba(44, 30, 26, 0.04);
-            transition: transform 0.4s, box-shadow 0.4s;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             border: 1px solid rgba(44, 30, 26, 0.03);
         }
 
         .step-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 48px rgba(44, 30, 26, 0.08);
+            transform: translateY(-10px);
+            box-shadow: 0 24px 56px rgba(44, 30, 26, 0.08);
         }
 
         .step-number {
-            display: inline-block;
             font-family: 'Playfair Display', serif;
-            font-size: 48px;
+            font-size: 52px;
             font-weight: 700;
-            color: rgba(192, 57, 43, 0.15);
+            color: rgba(192, 57, 43, 0.10);
             line-height: 1;
-            margin-bottom: 8px;
         }
 
         .step-icon {
-            font-size: 42px;
-            margin-bottom: 16px;
+            font-size: 44px;
+            display: block;
+            margin: 8px 0 12px;
         }
 
         .step-card h3 {
@@ -363,10 +500,11 @@
         .step-card p {
             font-size: 15px;
             color: #6a5a54;
+            line-height: 1.6;
         }
 
-        /* ===== SECTION TÉMOIGNAGES ===== */
-        .testimonials {
+        /* ===== TÉMOIGNAGES ===== */
+        .testimonials-section {
             background: #ffffff;
             border-radius: 48px;
             padding: 64px 48px;
@@ -376,33 +514,47 @@
 
         .testimonial-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 40px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
             margin-top: 24px;
         }
 
         .testimonial-item {
-            padding: 24px 28px;
+            padding: 28px 24px;
             border-radius: 24px;
-            background: #faf6f2;
-            transition: background 0.3s;
+            background: #fcf8f5;
+            transition: all 0.4s;
         }
 
         .testimonial-item:hover {
-            background: #f5ede7;
+            background: #faf6f2;
+            transform: translateY(-4px);
+        }
+
+        .testimonial-item .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #f0e8e0, #e6dcd4);
         }
 
         .testimonial-item .stars {
             color: #f1c40f;
-            font-size: 18px;
+            font-size: 16px;
             letter-spacing: 2px;
             margin-bottom: 8px;
         }
 
         .testimonial-item blockquote {
-            font-size: 16px;
+            font-size: 15px;
             color: #2d1e1a;
             font-style: italic;
+            line-height: 1.7;
             margin-bottom: 12px;
         }
 
@@ -417,16 +569,18 @@
             color: #9a8a84;
         }
 
-        /* ===== CTA FINAL ===== */
+        /* ===== CTA ===== */
         .cta-section {
             text-align: center;
             padding: 60px 0 80px;
             border-top: 1px solid rgba(44, 30, 26, 0.05);
+            border-radius: 48px;
+            margin-bottom: 40px;
         }
 
         .cta-section h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 40px;
+            font-size: 42px;
             font-weight: 700;
             margin-bottom: 12px;
         }
@@ -438,8 +592,11 @@
         }
 
         .cta-section .btn-primary {
-            padding: 16px 56px;
+            padding: 18px 60px;
             font-size: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
         }
 
         /* ===== FOOTER ===== */
@@ -468,81 +625,163 @@
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
-            .hero {
+            .hero-wrapper {
                 grid-template-columns: 1fr;
                 text-align: center;
                 gap: 40px;
             }
-            .hero-content p {
+
+            .hero-content .subtitle {
                 margin-left: auto;
                 margin-right: auto;
             }
+
             .hero-buttons {
                 justify-content: center;
             }
+
             .hero-stats {
                 justify-content: center;
             }
-            .floating-card:nth-child(2) {
-                right: 2%;
+
+            .hero-carousel {
+                max-width: 500px;
             }
-            .floating-card:nth-child(3) {
-                left: 2%;
-            }
-            .steps {
-                grid-template-columns: 1fr 1fr;
-            }
+
+            .floating-card-1 { right: 2%; top: 3%; }
+            .floating-card-2 { left: 2%; bottom: 8%; }
+
+            .steps { grid-template-columns: 1fr 1fr; }
+            .testimonial-grid { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 768px) {
             .container { padding: 0 20px; }
-            header { flex-wrap: wrap; gap: 12px; }
-            nav { gap: 16px; flex-wrap: wrap; }
-            .hero-content h1 { font-size: 36px; }
+            header { padding: 14px 20px; }
+
+            .hero-content h1 {
+                font-size: 36px;
+            }
+
+            .hero-stats {
+                gap: 24px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero-carousel {
+                max-width: 100%;
+                aspect-ratio: 4/3;
+            }
+
+            .carousel-slide .slide-overlay .slide-title {
+                font-size: 20px;
+            }
+
+            .carousel-slide .slide-overlay .slide-desc {
+                font-size: 13px;
+            }
+
             .steps { grid-template-columns: 1fr; }
             .testimonial-grid { grid-template-columns: 1fr; }
-            .testimonials { padding: 32px 20px; }
-            .hero-stats { gap: 24px; flex-wrap: wrap; }
-            footer { flex-direction: column; text-align: center; }
+            .testimonials-section { padding: 32px 20px; }
+
+            nav a:not(.btn-outline):not(.btn-primary) {
+                display: none;
+            }
+
+            .cta-section h2 {
+                font-size: 32px;
+            }
+
+            footer {
+                flex-direction: column;
+                text-align: center;
+            }
+
             footer a { margin: 0 12px; }
             .floating-card { display: none; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 28px;
+            }
+
+            .hero-buttons .btn-primary,
+            .hero-buttons .btn-outline {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .carousel-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+
+            .carousel-btn.prev { left: 8px; }
+            .carousel-btn.next { right: 8px; }
+
+            .section-title {
+                font-size: 30px;
+            }
+
+            .cta-section .btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .carousel-slide .slide-overlay {
+                padding: 30px 16px 20px;
+            }
+
+            .carousel-slide .slide-overlay .slide-title {
+                font-size: 18px;
+            }
+
+            .carousel-slide .slide-overlay .slide-desc {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <!-- ===== HEADER ===== -->
+    <header id="header">
+        <a href="#" class="logo">
+            <span>❤️</span> Cœurs Connectés
+        </a>
+        <nav>
+            <a href="#">Rencontres</a>
+            <a href="#">Communauté</a>
+            <a href="#">Blog</a>
+            <a href="CONNEXION.HTML" class="btn-outline">Connexion</a>
+            <a href="INSCRIPTION.HTML" class="btn-primary">S'inscrire</a>
+        </nav>
+    </header>
 
-        <!-- ===== HEADER ===== -->
-        <header>
-            <div class="logo">
-                <span>❤️</span> Cœurs Connectés
-            </div>
-            <nav>
-                <a href="#">Rencontres</a>
-                <a href="#">Communauté</a>
-                <a href="#">Blog</a>
-                <a href="CONNEXION.HTML" class="btn-outline">Connexion</a>
+    <!-- ===== HERO AVEC CARROUSEL ===== -->
+    <section class="hero-section">
+        <div class="container hero-wrapper">
 
-                <a href="INSCRIPTION.HTML" class="btn-primary">S'inscrire</a>
-            </nav>
-        </header>
-
-        <!-- ===== HERO ===== -->
-        <section class="hero">
+            <!-- ===== CONTENU GAUCHE ===== -->
             <div class="hero-content">
                 <span class="badge">✨ Nouvelle expérience 2026</span>
                 <h1>
-                    L'amour <i>se</i> rencontre<br />
+                    L'amour <span class="highlight">se</span> rencontre<br />
                     au bon endroit
                 </h1>
-                <p>
+                <p class="subtitle">
                     Des milliers de célibataires authentiques partagent déjà leur histoire.
                     Et si la vôtre commençait ici ?
                 </p>
                 <div class="hero-buttons">
-                    <a href="INSCRIPTION.HTML" class="btn-primary">💫 Créer mon profil</a>
-                    <a href="#" class="btn-outline">Découvrir</a>
+                    <a href="INSCRIPTION.HTML" class="btn-primary">
+                        <i class="fas fa-heart"></i> Créer mon profil
+                    </a>
+                    <a href="#how-it-works" class="btn-outline">Découvrir</a>
                 </div>
                 <div class="hero-stats">
                     <div>
@@ -560,95 +799,338 @@
                 </div>
             </div>
 
-            <div class="hero-visual">
-                <div class="hero-image-frame">
-                    <!-- Remplacer par votre propre image : <img src="votre-image.jpg" alt="Couple heureux" /> -->
-                    <div class="hero-image-placeholder">
-                        <span>💑</span>
-                        <span style="font-size: 16px; font-weight: 300;">Une histoire commence ici</span>
+            <!-- ===== CARROUSEL D'IMAGES ===== -->
+            <div class="hero-carousel" id="heroCarousel">
+                <div class="carousel-slides" id="carouselSlides">
+
+                    <!-- Slide 1 -->
+                    <div class="carousel-slide">
+                        <img src="images/im6.avif" alt="Couple romantique" loading="lazy" />
+                        <div class="slide-overlay">
+                            <div class="slide-title">✨ Rencontres sincères</div>
+                            <div class="slide-desc">Des profils authentiques pour des histoires qui durent</div>
+                        </div>
                     </div>
-                    <!-- Cartes flottantes -->
-                    <div class="floating-card" style="top: 8%; right: -5%;">
-                        <span class="heart">❤️</span> Match ❤️
+
+                    <!-- Slide 2 -->
+                    <div class="carousel-slide">
+                        <img src="images/im5.avif" alt="Couple marchant main dans la main" loading="lazy" />
+                        <div class="slide-overlay">
+                            <div class="slide-title">🌹 L'amour est à portée</div>
+                            <div class="slide-desc">Des milliers de cœurs battent à l'unisson près de chez vous</div>
+                        </div>
                     </div>
-                    <div class="floating-card" style="bottom: 12%; left: -8%;">
-                        <span class="heart">💬</span> 2 468 connectés
+
+                    <!-- Slide 3 -->
+                    <div class="carousel-slide">
+                        <img src="images/im4.avif" alt="Couple heureux" loading="lazy" />
+                        <div class="slide-overlay">
+                            <div class="slide-title">🎵 Vibrez ensemble</div>
+                            <div class="slide-desc">Partagez vos passions et trouvez l'âme sœur</div>
+                        </div>
                     </div>
+
+                    <!-- Slide 4 -->
+                    <div class="carousel-slide">
+                        <img src="images/im3.avif" alt="Couple en voyage" loading="lazy" />
+                        <div class="slide-overlay">
+                            <div class="slide-title">✈️ Aventures à deux</div>
+                            <div class="slide-desc">Des rencontres qui donnent envie de voyager ensemble</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5 -->
+                    <div class="carousel-slide">
+                        <img src="images/im2.avif" alt="Couple complice" loading="lazy" />
+                        <div class="slide-overlay">
+                            <div class="slide-title">💖 Moments complices</div>
+                            <div class="slide-desc">Des instants précieux à deux, loin du quotidien</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 6 -->
+                    <div class="carousel-slide">
+                        <img src="images/im1.avif" alt="Couple célébrant" loading="lazy" />
+                        <div class="slide-overlay">
+                            <div class="slide-title">🥂 Célébrez l'amour</div>
+                            <div class="slide-desc">Votre histoire commence ici, rejoignez-nous</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Indicateurs -->
+                <div class="carousel-indicators" id="carouselIndicators">
+                    <span class="dot active" data-index="0"></span>
+                    <span class="dot" data-index="1"></span>
+                    <span class="dot" data-index="2"></span>
+                    <span class="dot" data-index="3"></span>
+                    <span class="dot" data-index="4"></span>
+                    <span class="dot" data-index="5"></span>
+                </div>
+
+                <!-- Boutons de navigation -->
+                <button class="carousel-btn prev" id="carouselPrev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-btn next" id="carouselNext">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+
+                <!-- Cartes flottantes -->
+                <div class="floating-card floating-card-1">
+                    <span class="heart-icon">❤️</span>
+                    <span>L❤️VE</span>
+                </div>
+                <div class="floating-card floating-card-2">
+                    <span class="heart-icon">💬</span>
+                    <span>2 468 connectés</span>
                 </div>
             </div>
-        </section>
 
-        <!-- ===== COMMENT ÇA MARCHE ===== -->
-        <h2 class="section-title">En 3 étapes, trouvez l'amour</h2>
+        </div>
+    </section>
+
+    <!-- ===== COMMENT ÇA MARCHE ===== -->
+    <div class="container" id="how-it-works">
+        <h2 class="section-title">En 3 étapes, trouvez <span style="color:#c0392b;">❤️</span> l'amour</h2>
         <p class="section-subtitle">Un processus simple, humain et élégant.</p>
 
         <div class="steps">
             <div class="step-card">
                 <div class="step-number">01</div>
-                <div class="step-icon">✨</div>
+                <span class="step-icon">✨</span>
                 <h3>Créez votre univers</h3>
                 <p>Un profil qui vous ressemble : photos, passions, et une petite touche de poésie.</p>
             </div>
             <div class="step-card">
                 <div class="step-number">02</div>
-                <div class="step-icon">💞</div>
+                <span class="step-icon">💞</span>
                 <h3>Laissez-vous guider</h3>
                 <p>Nos algorithmes sensibles vous proposent des profils avec qui tout peut cliquer.</p>
             </div>
             <div class="step-card">
                 <div class="step-number">03</div>
-                <div class="step-icon">🌹</div>
+                <span class="step-icon">🌹</span>
                 <h3>Vivez votre histoire</h3>
                 <p>Discutez, partagez, rencontrez. Le reste appartient à la magie des cœurs.</p>
             </div>
         </div>
+    </div>
 
-        <!-- ===== TÉMOIGNAGES ===== -->
-        <div class="testimonials">
-            <h2 style="font-family: 'Playfair Display', serif; font-size: 32px; text-align: center; margin-bottom: 8px;">
-                Ils ont trouvé l'amour 🌹
+    <!-- ===== TÉMOIGNAGES ===== -->
+    <div class="container">
+        <div class="testimonials-section">
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 34px; text-align: center; margin-bottom: 4px;">
+                Ils ont trouvé l'amour <span style="color: #c0392b;">🌹</span>
             </h2>
-            <p style="text-align: center; color: #7a6a64; margin-bottom: 24px;">
+            <p style="text-align: center; color: #7a6a64; margin-bottom: 28px; font-size: 16px;">
                 Des histoires vraies, venues du cœur.
             </p>
             <div class="testimonial-grid">
                 <div class="testimonial-item">
+                    <div class="testimonial-avatar">👩</div>
                     <div class="stars">★★★★★</div>
-                    <blockquote>
-                        “Je n'osais plus y croire. En trois semaines, j'ai rencontré l'homme de ma vie. Merci pour cette bulle d'amour.”
-                    </blockquote>
+                    <blockquote>“Je n'osais plus y croire. En trois semaines, j'ai rencontré l'homme de ma vie.”</blockquote>
                     <div class="author">— Élodie, 31 ans</div>
                     <div class="location">📍 Paris</div>
                 </div>
                 <div class="testimonial-item">
+                    <div class="testimonial-avatar">👨</div>
                     <div class="stars">★★★★★</div>
-                    <blockquote>
-                        “Un design magnifique, des rencontres sincères. C'est le site qui m'a redonné le sourire après une rupture difficile.”
-                    </blockquote>
+                    <blockquote>“Un design magnifique, des rencontres sincères. J'ai retrouvé le sourire.”</blockquote>
                     <div class="author">— Thomas, 29 ans</div>
                     <div class="location">📍 Lyon</div>
                 </div>
+                <div class="testimonial-item">
+                    <div class="testimonial-avatar">👩‍🦰</div>
+                    <div class="stars">★★★★★</div>
+                    <blockquote>“Je cherchais une connexion authentique. Grâce à Cœurs Connectés, j'ai trouvé bien plus.”</blockquote>
+                    <div class="author">— Camille, 27 ans</div>
+                    <div class="location">📍 Bordeaux</div>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- ===== CTA FINAL ===== -->
+    <!-- ===== CTA ===== -->
+    <div class="container">
         <div class="cta-section">
-            <h2>Prêt(e) à vivre une belle histoire ?</h2>
+            <h2>Prêt(e) à vivre une belle histoire <span style="color:#c0392b;">❤️</span> ?</h2>
             <p>Rejoignez une communauté bienveillante où chaque cœur compte.</p>
-            <a href="INSCRIPTION.HTML" class="btn-primary"> Je m'inscris maintenant  💖</a>
+            <a href="INSCRIPTION.HTML" class="btn-primary">
+                <i class="fas fa-heart"></i> Je m'inscris maintenant
+            </a>
         </div>
+    </div>
 
-        <!-- ===== FOOTER ===== -->
+    <!-- ===== FOOTER ===== -->
+    <div class="container">
         <footer>
-            <div>© 2026 Cœurs Connectés — avec ❤️</div>
+            <div>© 2026 Cœurs Connectés — avec <span style="color:#c0392b; animation: pulse 2s infinite; display:inline-block;">❤️</span></div>
             <div>
                 <a href="#">Mentions légales</a>
                 <a href="#">Confidentialité</a>
                 <a href="#">Contact</a>
             </div>
         </footer>
-
     </div>
+
+    <!-- ===== JAVASCRIPT CORRIGÉ ===== -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ===== ÉLÉMENTS =====
+            const slidesContainer = document.getElementById('carouselSlides');
+            const dots = document.querySelectorAll('.dot');
+            const prevBtn = document.getElementById('carouselPrev');
+            const nextBtn = document.getElementById('carouselNext');
+            const carousel = document.getElementById('heroCarousel');
+
+            let currentSlide = 0;
+            const totalSlides = 6;
+            let autoPlayInterval = null;
+            let isTransitioning = false;
+
+            // ===== FONCTIONS =====
+            function goToSlide(index) {
+                if (isTransitioning) return;
+                if (index < 0) index = totalSlides - 1;
+                if (index >= totalSlides) index = 0;
+                
+                isTransitioning = true;
+                currentSlide = index;
+                
+                // Déplacement du carrousel
+                slidesContainer.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+                
+                // Mise à jour des indicateurs
+                dots.forEach(function(dot, i) {
+                    dot.classList.toggle('active', i === currentSlide);
+                });
+                
+                // Fin de la transition
+                setTimeout(function() {
+                    isTransitioning = false;
+                }, 800);
+            }
+
+            function nextSlide() {
+                goToSlide(currentSlide + 1);
+                resetAutoPlay();
+            }
+
+            function prevSlide() {
+                goToSlide(currentSlide - 1);
+                resetAutoPlay();
+            }
+
+            // ===== AUTO-PLAY =====
+            function startAutoPlay() {
+                if (autoPlayInterval) {
+                    clearInterval(autoPlayInterval);
+                }
+                autoPlayInterval = setInterval(function() {
+                    nextSlide();
+                }, 4000);
+            }
+
+            function resetAutoPlay() {
+                if (autoPlayInterval) {
+                    clearInterval(autoPlayInterval);
+                }
+                startAutoPlay();
+            }
+
+            // ===== ÉVÉNEMENTS =====
+            // Dots
+            dots.forEach(function(dot) {
+                dot.addEventListener('click', function() {
+                    var index = parseInt(this.getAttribute('data-index'));
+                    goToSlide(index);
+                    resetAutoPlay();
+                });
+            });
+
+            // Boutons
+            nextBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                nextSlide();
+            });
+
+            prevBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                prevSlide();
+            });
+
+            // Pause au survol
+            carousel.addEventListener('mouseenter', function() {
+                if (autoPlayInterval) {
+                    clearInterval(autoPlayInterval);
+                    autoPlayInterval = null;
+                }
+            });
+
+            carousel.addEventListener('mouseleave', function() {
+                startAutoPlay();
+            });
+
+            // ===== HEADER SCROLL =====
+            window.addEventListener('scroll', function() {
+                var header = document.getElementById('header');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // ===== NAVIGATION CLAVIER =====
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    prevSlide();
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    nextSlide();
+                }
+            });
+
+            // ===== SWIPE MOBILE =====
+            var touchStartX = 0;
+            var touchEndX = 0;
+
+            carousel.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            carousel.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                var diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) {
+                        nextSlide();
+                    } else {
+                        prevSlide();
+                    }
+                    resetAutoPlay();
+                }
+            }, { passive: true });
+
+            // ===== DÉMARRAGE =====
+            // Initialisation : première slide active
+            goToSlide(0);
+            
+            // Démarrer l'auto-play après 2 secondes
+            setTimeout(function() {
+                startAutoPlay();
+            }, 2000);
+
+            console.log('❤️ Cœurs Connectés — Carrousel actif avec ' + totalSlides + ' images');
+
+        })();
+    </script>
 
 </body>
 </html>
